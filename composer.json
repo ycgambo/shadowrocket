@@ -1,0 +1,5 @@
+{
+    "require": {
+        "walkor/workerman": "^3.5.4"
+    }
+}
