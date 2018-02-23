@@ -1,5 +1,18 @@
 {
+    "name": "ycgambo/shadowrocket",
+    "license": "MIT",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "ycgambo",
+        }
+    ],
     "require": {
         "walkor/workerman": "^3.5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "ShadowRocket": "src/shadowrocket/"
+        }
     }
 }
