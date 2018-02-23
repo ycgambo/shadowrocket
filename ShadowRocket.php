@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__ . 'vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use ShadowRocket\Launcher;
 use ShadowRocket\Server;
 
 $sr = new Launcher();
-$sr->launch([new Server()]);
+$sr->launch(array(new Server()));

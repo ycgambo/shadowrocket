@@ -6,16 +6,16 @@ use Workerman\Worker;
 
 class Launcher
 {
-    private $_config = [
+    private $_config = array(
         'server'        => '127.0.0.1',
         'port'          => '8388',
         'password'      => '536.shadowsocks',
         'encryption'    => 'aes-256-cfb',
         'local_port'    => '4001',
         'process_num'   => 12,
-    ];
+    );
 
-    function __construct(array $config = []) {
+    function __construct(array $config = array()) {
         if (!extension_loaded('pcntl')) {
             exit("Please install pcntl extension. See http://doc3.workerman.net/install/install.html\n");
         }
@@ -28,7 +28,7 @@ class Launcher
         }
     }
 
-    public function launch(array $modules = []) {
+    public function launch(array $modules = array()) {
         foreach ($modules as $module) {
             $module->register($this->_config);
         }

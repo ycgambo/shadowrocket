@@ -6,7 +6,7 @@ use Workerman\Worker;
 use Workerman\Connection\AsyncTcpConnection;
 
 class Local {
-    const constants = [
+    const constants = array(
         'STAGE_INIT'        => 0,
         'STAGE_ADDR'        => 1,
         'STAGE_UDP_ASSOC'   => 2,
@@ -17,7 +17,7 @@ class Local {
         'CMD_CONNECT'       => 1,
         'CMD_BIND'          => 2,
         'CMD_UDP_ASSOCIATE' => 3,
-    ];
+    );
 
     public function register(array $config) {
         $worker = new Worker('tcp://0.0.0.0:' . $config['local_port']);
