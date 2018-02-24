@@ -4,10 +4,11 @@
     "description": "PHP shadowsocks",
     "keywords": ["socket"],
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "authors": [
         {
-            "name": "ycgambo"
+            "name": "ycgambo",
+            "email": "ycgambo@gmail.com"
         }
     ],
     "require": {
