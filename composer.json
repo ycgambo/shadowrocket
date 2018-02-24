@@ -1,10 +1,9 @@
 {
     "name": "ycgambo/shadowrocket",
-    "type": "tool",
-    "description": "PHP shadowsocks",
-    "keywords": ["socket"],
+    "type": "socket",
+    "description": "A PHP shadowsocks component",
+    "keywords": ["socket", "shadowsocks"],
     "license": "MIT",
-    "version": "1.1.0",
     "authors": [
         {
             "name": "ycgambo",
