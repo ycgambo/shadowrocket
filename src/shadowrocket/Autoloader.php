@@ -24,7 +24,8 @@ class Autoloader {
                 }
 
                 $count = 1;
-                $file_path = str_ireplace($namespace, $path, $name, $count) . '.php';
+                $file_path = $this->project_root . DIRECTORY_SEPARATOR
+                            . str_ireplace($namespace, $path, $name, $count) . '.php';
 
                 if (file_exists($file_path)) {
                     require_once $file_path;
