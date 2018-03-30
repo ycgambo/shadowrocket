@@ -1,8 +1,9 @@
 <?php
 
-namespace ShadowRocket;
+namespace ShadowRocket\Helper;
 
-abstract class Configurable {
+abstract class Configurable
+{
 
     protected $_config = array();
 
@@ -11,7 +12,8 @@ abstract class Configurable {
      *
      * @param array $config
      */
-    public function setConfig(array $config = array()) {
+    public function setConfig(array $config = array())
+    {
         foreach ($config as $key => $value) {
             $this->_config[$key] = $value;
         }
@@ -22,7 +24,8 @@ abstract class Configurable {
      * @param array $config_names
      * @return array
      */
-    public function getConfig(array $config_names = array()) {
+    public function getConfig(array $config_names = array())
+    {
         if ($config_names == array()) {
             return $this->_config;
         }
