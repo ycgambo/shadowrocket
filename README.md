@@ -17,8 +17,8 @@ A composer component that helps you to build your own socks tunnel.
     composer require ycgambo/shadowrocket
 
 ### Requirements
-1. Composer support
-2. PHP 5.3+ support
+1. Composer
+2. PHP 5.3+
 
 ## Usage
 
@@ -90,9 +90,9 @@ $launcher->launchAll();
 
 Now we can pass data to 127.0.0.1:1086 and server 123.456.78.9:8388 will reply.
 
-You can find many client apps in [shadowsocks repo](https://github.com/shadowsocks) if you prefer app.
+## Want a client APP?
 
 - [For Android](https://github.com/shadowsocks/shadowsocks-android/releases)
-- [For IOS](https://github.com/shadowsocks/shadowsocks-iOS/releases)
+- [For IOS](https://itunes.apple.com/cn/app/superwingy/id1290093815?mt=8)
 - [For Mac](https://github.com/shadowsocks/ShadowsocksX-NG/releases) 
 - [For Windows](https://github.com/shadowsocks/shadowsocks-windows/releases)

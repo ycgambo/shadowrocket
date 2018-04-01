@@ -2,10 +2,10 @@
 
 namespace ShadowRocket\Net;
 
+use ShadowRocket\Helper\Encryptor;
+
 use Workerman\Worker;
 use Workerman\Connection\AsyncTcpConnection;
-
-use ShadowRocket\Helper\CipherGenerator;
 
 class Connection
 {
@@ -34,7 +34,7 @@ class Connection
         // when applications connect this local server
         $worker->onConnect = function ($connection) use ($config) {
             $connection->stage = Connection::STAGE_INIT;
-            $connection->cipher = CipherGenerator::generate($config['password'], $config['encryption']);
+            $connection->cipher = new Encryptor($config['password'], $config['encryption']);
         };
 
         // message from applications to this local server
@@ -47,6 +47,10 @@ class Connection
                     break;
 
                 case Connection::STAGE_ADDR:
+                    if (empty($buffer)) {
+                        $connection->close();
+                        return;
+                    }
                     // see: https://www.ietf.org/rfc/rfc1928 #4.Requests
                     switch ($cmd = ord($buffer[1])) {
                         case Connection::CMD_CONNECT:
@@ -149,7 +153,7 @@ class Connection
         // shadowsocks client on connect
         $worker->onConnect = function ($connection) use ($config) {
             $connection->stage = Connection::STAGE_INIT;
-            $connection->cipher = CipherGenerator::generate($config['password'], $config['encryption']);
+            $connection->cipher = new Encryptor($config['password'], $config['encryption']);
         };
 
         // message from shadowsocks client
@@ -162,6 +166,7 @@ class Connection
                     $header_data = Connection::parseSocket5Header($buffer);
                     if (empty($header_data)) {
                         $connection->close();
+                        return;
                     }
 
                     // build tunnel to actual server
