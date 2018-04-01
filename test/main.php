@@ -1,10 +1,8 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/shadowrocket/Autoloader.php';
 
 use ShadowRocket\Launcher;
 
-new ShadowRocket\Autoloader();
 $launcher = new Launcher(array(
     'server' => '127.0.0.1',
     'port' => '8388',
