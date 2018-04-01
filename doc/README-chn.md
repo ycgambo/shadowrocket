@@ -1,30 +1,28 @@
 # shadowrocket
 
-A composer component that helps you to build your own socket tunnel.
+一个帮助你建立自己的socket隧道的composer组件。
 
-[中文文档](doc/README-chn.md)
+## 特点
+1. 支持TCP/UDP
+2. 支持IPV4/DOMAINNAME/IPV6
 
-## Features
-1. TCP/UDP support
-2. IPV4/DOMAINNAME/IPV6 support
-
-### Coming Next
+### 即将实现的特点
 - monolog support
 - server manager
 - user management
 
 
-## Install
+## 安装
 
     composer require ycgambo/shadowrocket
 
-### Requirements
+### 安装需求
 1. Composer
 2. PHP 5.3+
 
-## Usage
+## 用法
 
-### Run a server
+### 运行服务器
 
 ```php
 <?php
@@ -38,9 +36,9 @@ $launcher->launchAll();
 
 ```
 
-These code start a server by using default configurations.
+以上代码将按默认配置启动一个服务器
 
-### Custom configuration
+### 自定义配置
 
 ```php
 <?php
@@ -58,18 +56,18 @@ $launcher = new Launcher($config);
 
 $launcher->addServer();
 
-// change some configurations to config another port
+// 更改某部分配置以应用到另一个服务器的启动上
 $launcher->addServer(array(
     'port'        => '8389',
     'password'    => 'another_pass'
 ));
 
-// launch these two servers
+// 启动这两个服务器
 $launcher->launchAll();
 
 ```
 
-### Run a local proxy
+### 启动本地代理
 
 ```php
 <?php
@@ -90,11 +88,11 @@ $launcher->launchAll();
 
 ```
 
-Now we can pass data to 127.0.0.1:1086 and server 123.456.78.9:8388 will reply.
+现在我们可以发送数据包到127.0.0.1:1086，然后服务器123.456.78.9:8388将响应我们的请求。
 
-## Want a client APP?
+## 使用本地代理APP
 
-- [For Android](https://github.com/shadowsocks/shadowsocks-android/releases)
-- [For IOS](https://itunes.apple.com/cn/app/superwingy/id1290093815?mt=8)
-- [For Mac](https://github.com/shadowsocks/ShadowsocksX-NG/releases) 
-- [For Windows](https://github.com/shadowsocks/shadowsocks-windows/releases)
+- [Android版本](https://github.com/shadowsocks/shadowsocks-android/releases)
+- [IOS版本](https://itunes.apple.com/cn/app/superwingy/id1290093815?mt=8)
+- [Mac版本](https://github.com/shadowsocks/ShadowsocksX-NG/releases) 
+- [Windows版本](https://github.com/shadowsocks/shadowsocks-windows/releases)
