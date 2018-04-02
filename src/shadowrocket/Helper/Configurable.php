@@ -2,40 +2,30 @@
 
 namespace ShadowRocket\Helper;
 
-abstract class Configurable
+abstract class Configurable extends Config
 {
-
-    protected $_config = array();
-
-    /**
-     * Overwrite config with assigned `$config`
-     *
-     * @param array $config
-     */
-    public function setConfig(array $config = array())
+    public static function setRequiredConfig($required)
     {
-        foreach ($config as $key => $value) {
-            $this->_config[$key] = $value;
-        }
+        parent::setConfigItems(array('__required_config' => $required));
     }
 
-    /**
-     * return specified config items, return all by default
-     * @param array $config_names
-     * @return array
-     */
-    public function getConfig(array $config_names = array())
+    public static function getRequiredConfig()
     {
-        if ($config_names == array()) {
-            return $this->_config;
-        }
+        return parent::getConfig('__required_config');
+    }
 
-        $config_tmp = array();
-        foreach ($config_names as $config_name) {
-            if (isset($this->_config[$config_name])) {
-                array_push($config_tmp, $this->_config[$config_name]);
+    public static function hasRequiredConfig() {
+        return parent::hasValidConfig('__required_config');
+    }
+
+    public static function getMissingConfig()
+    {
+        $rtn = array();
+        foreach (self::getRequiredConfig() as $required) {
+            if (!parent::hasConfig($required)) {
+                $rtn[] = $required;
             }
         }
-        return $config_tmp;
+        return $rtn;
     }
 }

@@ -28,7 +28,7 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Launcher;
+use ShadowRocket\Bin\Launcher;
 
 $launcher = new Launcher();
 $launcher->addServer();
@@ -44,7 +44,7 @@ $launcher->launchAll();
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Launcher;
+use ShadowRocket\Bin\Launcher;
 
 $config = array(
     'port'        => '8388',
@@ -73,7 +73,7 @@ $launcher->launchAll();
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Launcher;
+use ShadowRocket\Bin\Launcher;
 
 $config = array(
     'server'      => '123.456.78.9',

@@ -1,6 +1,6 @@
 <?php
 
-namespace ShadowRocket\Helper;
+namespace ShadowRocket\Net;
 
 use phpseclib\Crypt\Random;
 

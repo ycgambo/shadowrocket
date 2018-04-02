@@ -2,8 +2,6 @@
 
 namespace ShadowRocket\Net;
 
-use ShadowRocket\Helper\Encryptor;
-
 use Workerman\Worker;
 use Workerman\Connection\AsyncTcpConnection;
 

@@ -30,7 +30,7 @@ A composer component that helps you to build your own socket tunnel.
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Launcher;
+use ShadowRocket\Bin\Launcher;
 
 $launcher = new Launcher();
 $launcher->addServer();
@@ -46,7 +46,7 @@ These code start a server by using default configurations.
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Launcher;
+use ShadowRocket\Bin\Launcher;
 
 $config = array(
     'port'        => '8388',
@@ -75,7 +75,7 @@ $launcher->launchAll();
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Launcher;
+use ShadowRocket\Bin\Launcher;
 
 $config = array(
     'server'      => '123.456.78.9',
