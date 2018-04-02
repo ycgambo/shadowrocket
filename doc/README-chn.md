@@ -7,9 +7,10 @@
 2. 支持IPV4/DOMAINNAME/IPV6
 
 ### 即将实现的特点
-- monolog support
-- server manager
-- user management
+- 黑名单
+- monolog日志系统
+- 服务管理器
+- 用户管理
 
 
 ## 安装
@@ -47,16 +48,18 @@ require_once __DIR__ . '/vendor/autoload.php';
 use ShadowRocket\Bin\Launcher;
 
 $config = array(
-    'port'        => '8388',
-    'password'    => 'mypass',
-    'encryption'  => 'aes-256-cfb',
-    'process_num' => 12,
+    'server' => array(
+        'port'        => '8388',
+        'password'    => 'mypass',
+        'encryption'  => 'aes-256-cfb',
+        'process_num' => 12,
+    )
 );
 $launcher = new Launcher($config);
 
 $launcher->addServer();
 
-// 更改某部分配置以应用到另一个服务器的启动上
+// 更改某部分配置以启动另一个服务器端口
 $launcher->addServer(array(
     'port'        => '8389',
     'password'    => 'another_pass'
@@ -76,11 +79,14 @@ require_once __DIR__ . '/vendor/autoload.php';
 use ShadowRocket\Bin\Launcher;
 
 $config = array(
-    'server'      => '123.456.78.9',
-    'port'        => '8388',
-    'password'    => 'mypass',
-    'encryption'  => 'aes-256-cfb',
-    'local_port'  => '1086',
+    'local' => array(
+        'server'      => '123.456.78.9',
+        'port'        => '8388',
+        'password'    => 'mypass',
+        'encryption'  => 'aes-256-cfb',
+        'local_port'  => '1086',
+        'process_num' => 12,
+    )
 );
 $launcher = new Launcher($config);
 $launcher->addLocal();

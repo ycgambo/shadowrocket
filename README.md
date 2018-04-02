@@ -9,6 +9,7 @@ A composer component that helps you to build your own socket tunnel.
 2. IPV4/DOMAINNAME/IPV6 support
 
 ### Coming Next
+- black list
 - monolog support
 - server manager
 - user management
@@ -49,16 +50,18 @@ require_once __DIR__ . '/vendor/autoload.php';
 use ShadowRocket\Bin\Launcher;
 
 $config = array(
-    'port'        => '8388',
-    'password'    => 'mypass',
-    'encryption'  => 'aes-256-cfb',
-    'process_num' => 12,
+    'server' => array(
+        'port'        => '8388',
+        'password'    => 'mypass',
+        'encryption'  => 'aes-256-cfb',
+        'process_num' => 12,
+    )
 );
 $launcher = new Launcher($config);
 
 $launcher->addServer();
 
-// change some configurations to config another port
+// change some server configurations to config another port
 $launcher->addServer(array(
     'port'        => '8389',
     'password'    => 'another_pass'
@@ -78,11 +81,14 @@ require_once __DIR__ . '/vendor/autoload.php';
 use ShadowRocket\Bin\Launcher;
 
 $config = array(
-    'server'      => '123.456.78.9',
-    'port'        => '8388',
-    'password'    => 'mypass',
-    'encryption'  => 'aes-256-cfb',
-    'local_port'  => '1086',
+    'local' => array(
+        'server'      => '123.456.78.9',
+        'port'        => '8388',
+        'password'    => 'mypass',
+        'encryption'  => 'aes-256-cfb',
+        'local_port'  => '1086',
+        'process_num' => 12,
+    )
 );
 $launcher = new Launcher($config);
 $launcher->addLocal();
