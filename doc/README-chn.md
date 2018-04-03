@@ -5,10 +5,10 @@
 ## 特点
 1. 支持TCP/UDP
 2. 支持IPV4/DOMAINNAME/IPV6
+3. monolog日志系统
 
 ### 即将实现的特点
 - 黑名单
-- monolog日志系统
 - 服务管理器
 - 用户管理
 
@@ -31,10 +31,9 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use ShadowRocket\Bin\Launcher;
 
-$launcher = new Launcher();
-$launcher->addServer();
-$launcher->launchAll();
-
+Launcher::initialize();
+Launcher::addModule('server');
+Launcher::launchAll();
 ```
 
 以上代码将按默认配置启动一个服务器
@@ -55,19 +54,17 @@ $config = array(
         'process_num' => 12,
     )
 );
-$launcher = new Launcher($config);
-
-$launcher->addServer();
+Launcher::initialize($config);
+Launcher::addModule('server');
 
 // 更改某部分配置以启动另一个服务器端口
-$launcher->addServer(array(
+Launcher::addModule('server', $changing_config = array(
     'port'        => '8389',
     'password'    => 'another_pass'
 ));
 
 // 启动这两个服务器
-$launcher->launchAll();
-
+Launcher::launchAll();
 ```
 
 ### 启动本地代理
@@ -88,10 +85,9 @@ $config = array(
         'process_num' => 12,
     )
 );
-$launcher = new Launcher($config);
-$launcher->addLocal();
-$launcher->launchAll();
-
+Launcher::initialize($config);
+Launcher::addModule('local');
+Launcher::launchAll();
 ```
 
 现在我们可以发送数据包到127.0.0.1:1086，然后服务器123.456.78.9:8388将响应我们的请求。

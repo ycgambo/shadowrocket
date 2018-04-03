@@ -50,7 +50,7 @@ class Launcher extends ConfigRequired
         return count(self::$_launch_echelon); // launch last
     }
 
-    protected static function addModule($module_name, array $config = array())
+    public static function addModule($module_name, array $config = array())
     {
         $module_name = strtolower($module_name);
         $config = self::combineConfig($module_name, $config);
@@ -76,7 +76,7 @@ class Launcher extends ConfigRequired
         }
     }
 
-    public function launchAll()
+    public static function launchAll()
     {
         array_walk_recursive(self::$_modules, function ($module, $key) {
             if ($module['enabled'] == false) {

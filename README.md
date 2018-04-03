@@ -7,10 +7,10 @@ A composer component that helps you to build your own socket tunnel.
 ## Features
 1. TCP/UDP support
 2. IPV4/DOMAINNAME/IPV6 support
+3. monolog support
 
 ### Coming Next
 - black list
-- monolog support
 - server manager
 - user management
 
@@ -33,10 +33,9 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use ShadowRocket\Bin\Launcher;
 
-$launcher = new Launcher();
-$launcher->addServer();
-$launcher->launchAll();
-
+Launcher::initialize();
+Launcher::addModule('server');
+Launcher::launchAll();
 ```
 
 These code start a server by using default configurations.
@@ -57,19 +56,17 @@ $config = array(
         'process_num' => 12,
     )
 );
-$launcher = new Launcher($config);
-
-$launcher->addServer();
+Launcher::initialize($config);
+Launcher::addModule('server');
 
 // change some server configurations to config another port
-$launcher->addServer(array(
+Launcher::addModule('server', $changing_config = array(
     'port'        => '8389',
     'password'    => 'another_pass'
 ));
 
 // launch these two servers
-$launcher->launchAll();
-
+Launcher::launchAll();
 ```
 
 ### Run a local proxy
@@ -90,10 +87,9 @@ $config = array(
         'process_num' => 12,
     )
 );
-$launcher = new Launcher($config);
-$launcher->addLocal();
-$launcher->launchAll();
-
+Launcher::initialize($config);
+Launcher::addModule('local');
+Launcher::launchAll();
 ```
 
 Now we can pass data to 127.0.0.1:1086 and server 123.456.78.9:8388 will reply.
