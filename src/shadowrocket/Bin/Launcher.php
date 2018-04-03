@@ -2,15 +2,24 @@
 
 namespace ShadowRocket\Bin;
 
-use ShadowRocket\Helper\Configurable;
+use ShadowRocket\Helper\ConfigRequired;
 
+use ShadowRocket\Helper\LauncherModuleInterface;
 use Workerman\Worker;
 
-class Launcher extends Configurable
+class Launcher extends ConfigRequired
 {
-    private $_modules = array();
+    private static $_modules = array();
+    private static $_launch_echelon = array(
+        /* 1st */
+        array('logger'),
+        /* 2nd */
+        array(),
+        /* 3rd */
+        array('server', 'local'),
+    );
 
-    function __construct(array $config = array())
+    public static function initialize(array $config = array())
     {
         self::setConfig(array(
             'server' => array(
@@ -31,37 +40,70 @@ class Launcher extends Configurable
         self::setConfigItems($config);
     }
 
-    public function addServer(array $config = array())
+    protected static function getLaunchOrder($key)
     {
-        $config = empty($config)
-            ? self::getConfig('server')
-            : array_replace(self::getConfig('server'), $config);
-        $module = new Server($config);
-        $this->_modules[spl_object_hash($module)] = $module;
+        foreach (self::$_launch_echelon as $order => $echelon) {
+            if (in_array($key, $echelon)) {
+                return $order;
+            }
+        }
+        return count(self::$_launch_echelon); // launch last
     }
 
-    public function addLocal(array $config = array())
+    protected static function addModule($module_name, array $config = array())
     {
-        $config = empty($config)
-            ? self::getConfig('local')
-            : array_replace(self::getConfig('local'), $config);
-        $module = new Local($config);
-        $this->_modules[spl_object_hash($module)] = $module;
+        $module_name = strtolower($module_name);
+        $config = self::combineConfig($module_name, $config);
+
+        if (!isset($config['name'])) {
+            $config['name'] = $module_name;
+        }
+        if (!isset($config['enabled'])) {
+            $config['enabled'] = true;
+        }
+
+        $order = self::getLaunchOrder($module_name);
+        if (!is_array(self::$_modules[$order])) {
+            self::$_modules[$order] = array();
+        }
+
+
+        $module_name = str_replace('_', '', ucwords($module_name, '_'));
+        try {
+            self::$_modules[$order][] = new $module_name($config);
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public function launchAll()
     {
-        foreach ($this->_modules as $hash => $module) {
-            if ($module::hasRequiredConfig() && ($missing_config = $module::getMissingConfig())) {
-               throw new \Exception("Missing config of $hash:" . implode(', ', $missing_config));
+        array_walk_recursive(self::$_modules, function ($module, $key) {
+            if ($module['enabled'] == false) {
+                return;
             }
-        }
 
-        foreach ($this->_modules as $module) {
-            try {
-                $module->getReady();
-            } catch (\Exception $e) {
-                throw $e;
+            if ($module instanceof ConfigRequired) {
+                if ($module::hasRequiredConfig() && ($missing_config = $module::getMissingConfig())) {
+                    throw new \Exception("Missing config of {$module['name']} :"
+                        . implode(', ', $missing_config));
+                }
+            }
+        });
+
+        foreach (self::$_modules as $order => $modules) {
+            foreach (self::$_modules[$order] as $module) {
+                if ($module['enabled'] == false) {
+                    continue;
+                }
+
+                if ($module instanceof LauncherModuleInterface) {
+                    try {
+                        $module->getReady();
+                    } catch (\Exception $e) {
+                        throw $e;
+                    }
+                }
             }
         }
 

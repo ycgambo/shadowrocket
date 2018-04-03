@@ -2,10 +2,11 @@
 
 namespace ShadowRocket\Bin;
 
-use ShadowRocket\Helper\Configurable;
+use ShadowRocket\Helper\ConfigRequired;
+use ShadowRocket\Helper\LauncherModuleInterface;
 use ShadowRocket\Net\Connection;
 
-class Local extends Configurable
+class Local extends ConfigRequired implements LauncherModuleInterface
 {
     public $workers = array();
 
