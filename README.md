@@ -7,9 +7,10 @@ A composer component that helps you to build your own socket tunnel.
 ## Features
 1. TCP/UDP support
 2. IPV4/DOMAINNAME/IPV6 support
+3. Monolog Logger
 
 ### Coming Next
-- monolog support
+- black list
 - server manager
 - user management
 
@@ -30,43 +31,16 @@ A composer component that helps you to build your own socket tunnel.
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Launcher;
-
-$launcher = new Launcher();
-$launcher->addServer();
-$launcher->launchAll();
-
-```
-
-These code start a server by using default configurations.
-
-### Custom configuration
-
-```php
-<?php
-require_once __DIR__ . '/vendor/autoload.php';
-
-use ShadowRocket\Launcher;
-
 $config = array(
-    'port'        => '8388',
-    'password'    => 'mypass',
-    'encryption'  => 'aes-256-cfb',
-    'process_num' => 12,
+    'server' => array(
+        'port'        => '8388',
+        'password'    => 'mypass',
+        'encryption'  => 'aes-256-cfb',
+        'process_num' => 12,
+    ),
 );
-$launcher = new Launcher($config);
 
-$launcher->addServer();
-
-// change some configurations to config another port
-$launcher->addServer(array(
-    'port'        => '8389',
-    'password'    => 'another_pass'
-));
-
-// launch these two servers
-$launcher->launchAll();
-
+ShadowRocket\Bin\Launcher::launch($config);
 ```
 
 ### Run a local proxy
@@ -75,22 +49,26 @@ $launcher->launchAll();
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Launcher;
-
 $config = array(
-    'server'      => '123.456.78.9',
-    'port'        => '8388',
-    'password'    => 'mypass',
-    'encryption'  => 'aes-256-cfb',
-    'local_port'  => '1086',
+    'local' => array(
+        'server'      => '123.456.78.9',
+        'port'        => '8388',
+        'password'    => 'mypass',
+        'encryption'  => 'aes-256-cfb',
+        'local_port'  => '1086',
+        'process_num' => 12,
+    )
 );
-$launcher = new Launcher($config);
-$launcher->addLocal();
-$launcher->launchAll();
 
+ShadowRocket\Bin\Launcher::launch($config);
 ```
 
 Now we can pass data to 127.0.0.1:1086 and server 123.456.78.9:8388 will reply.
+
+### More docs
+- [Run multi server on different port]
+- [Launcher]
+- [Modules]
 
 ## Want a client APP?
 
