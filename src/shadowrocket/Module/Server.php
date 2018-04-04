@@ -22,8 +22,8 @@ class Server extends ConfigRequired implements LauncherModuleInterface
 
     public function __construct(array $config = array())
     {
-        self::setConfig($config);
-        self::setRequiredConfig(array(
+        $this->setConfig($config);
+        $this->setRequiredConfig(array(
             'port',
             'password',
             'encryption',
@@ -33,7 +33,7 @@ class Server extends ConfigRequired implements LauncherModuleInterface
 
     public function getReady()
     {
-        array_push($this->workers, Connection::createServerWorker(self::getConfig(), 'tcp'));
-        array_push($this->workers, Connection::createServerWorker(self::getConfig(), 'udp'));
+        array_push($this->workers, Connection::createServerWorker($this->getConfig(), 'tcp'));
+        array_push($this->workers, Connection::createServerWorker($this->getConfig(), 'udp'));
     }
 }

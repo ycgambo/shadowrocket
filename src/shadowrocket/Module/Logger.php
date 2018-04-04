@@ -19,8 +19,8 @@ class Logger extends ConfigRequired implements LauncherModuleInterface
 {
     public function __construct($config)
     {
-        parent::setConfig($config);
-        parent::setRequiredConfig(array(
+        $this->setConfig($config);
+        $this->setRequiredConfig(array(
             'name',
             'handlers',
         ));
@@ -28,9 +28,9 @@ class Logger extends ConfigRequired implements LauncherModuleInterface
 
     public function getReady()
     {
-        $logger = new \Monolog\Logger(self::getConfig('name'));
+        $logger = new \Monolog\Logger($this->getConfig('name'));
 
-        $handlers = self::getConfig('handlers');
+        $handlers = $this->getConfig('handlers');
         foreach ($handlers as $handler) {
             if (!($handler instanceof HandlerInterface)) {
                 throw new \Exception(

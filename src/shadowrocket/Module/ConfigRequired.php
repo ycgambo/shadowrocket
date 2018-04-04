@@ -14,26 +14,26 @@ namespace ShadowRocket\Module;
 
 class ConfigRequired extends Configurable
 {
-    public static function setRequiredConfig($required)
+    public function setRequiredConfig($required)
     {
-        parent::setConfigItems(array('__required_config' => $required));
+        $this->setConfigItems(array('__required_config' => $required));
     }
 
-    public static function getRequiredConfig()
+    public function getRequiredConfig()
     {
-        return parent::getConfig('__required_config');
+        return $this->getConfig('__required_config');
     }
 
-    public static function hasRequiredConfig()
+    public function hasRequiredConfig()
     {
-        return parent::hasValidConfig('__required_config');
+        return $this->hasValidConfig('__required_config');
     }
 
-    public static function getMissingConfig()
+    public function getMissingConfig()
     {
         $rtn = array();
-        foreach (self::getRequiredConfig() as $required) {
-            if (!parent::hasConfig($required)) {
+        foreach ($this->getRequiredConfig() as $required) {
+            if (!$this->hasConfig($required)) {
                 $rtn[] = $required;
             }
         }

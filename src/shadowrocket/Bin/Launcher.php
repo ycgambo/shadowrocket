@@ -17,8 +17,10 @@ use ShadowRocket\Module\ConfigRequired;
 use ShadowRocket\Module\LauncherModuleInterface;
 use Workerman\Worker;
 
-class Launcher extends Configurable
+class Launcher
 {
+    private static $_config;
+
     /**
      * classes to be launched
      */
@@ -106,20 +108,20 @@ class Launcher extends Configurable
         }
 
         /* save config and create modules */
-        self::setConfig($configs);
+        self::$_config = $configs;
         foreach ($configs as $module_name => $config) {
             self::addModule($module_name, $config);
         }
 
         /* Check configurations of enabled config required modules */
-        array_walk_recursive(self::$_modules, function ($module, $key) {
+        array_walk_recursive(self::$_modules, function ($module) {
             if (($module instanceof Configurable) &&
-                ($module::getConfig('enabled') == false)) {
+                ($module->getConfig('enabled') == false)) {
                 return;
             }
 
             if ($module instanceof ConfigRequired) {
-                if ($module::hasRequiredConfig() && ($missing_config = $module::getMissingConfig())) {
+                if ($module->hasRequiredConfig() && ($missing_config = $module->getMissingConfig())) {
                     throw new \Exception("Missing config of {$module['name']} :"
                         . implode(', ', $missing_config));
                 }
@@ -130,7 +132,7 @@ class Launcher extends Configurable
         foreach (self::$_modules as $order => $modules) {
             foreach (self::$_modules[$order] as $module) {
                 if (($module instanceof Configurable) &&
-                    ($module::getConfig('enabled') == false)) {
+                    ($module->getConfig('enabled') == false)) {
                     continue;
                 }
 
@@ -141,7 +143,7 @@ class Launcher extends Configurable
                         throw $e;
                     }
 
-                    $module::setConfigItems(array('__is_ready' => true));
+                    $module->setConfigItems(array('__is_ready' => true));
                 }
             }
         }
@@ -155,8 +157,8 @@ class Launcher extends Configurable
         foreach (self::$_modules as $order => $modules) {
             foreach (self::$_modules[$order] as $module) {
                 if (($module instanceof Configurable) &&
-                    ($module::getConfig('name') == $module_name)) {
-                    return $module::getConfig('__is_ready');
+                    ($module->getConfig('name') == $module_name)) {
+                    return $module->getConfig('__is_ready');
                 }
             }
         }
