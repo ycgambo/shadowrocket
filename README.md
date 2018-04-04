@@ -66,7 +66,7 @@ ShadowRocket\Bin\Launcher::launch($config);
 Now we can pass data to 127.0.0.1:1086 and server 123.456.78.9:8388 will reply.
 
 ### More docs
-- [Run multi server on different port]
+- [Run multi server on different port](/doc/multi-server.md)
 - [Launcher]
 - [Modules]
 
