@@ -83,17 +83,20 @@ class Launcher
         $class = str_replace(' ', '', ucwords($class));
         $class = '\\ShadowRocket\\Module\\' . $class;
 
+        try {
+            $module = new $class();
+            if ($module instanceof LauncherModuleInterface) {
+                $module->init($config);
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
         $order = self::getLaunchOrder($module_name);
         if (!isset(self::$_modules[$order])) {
             self::$_modules[$order] = array();
         }
-        try {
-            $module = new $class();
-            $module->init();
-            self::$_modules[$order][] = $module;
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        self::$_modules[$order][] = $module;
     }
 
     public static function launch(array $configs)
