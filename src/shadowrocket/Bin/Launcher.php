@@ -88,7 +88,9 @@ class Launcher
             self::$_modules[$order] = array();
         }
         try {
-            self::$_modules[$order][] = new $class($config);
+            $module = new $class();
+            $module->init();
+            self::$_modules[$order][] = $module;
         } catch (\Exception $e) {
             throw $e;
         }

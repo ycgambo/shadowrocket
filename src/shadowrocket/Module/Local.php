@@ -20,7 +20,7 @@ class Local extends ConfigRequired implements LauncherModuleInterface
 {
     public $workers = array();
 
-    public function __construct(array $config = array())
+    public function init(array $config = array())
     {
         $this->setConfig($config);
         $this->setRequiredConfig(array(

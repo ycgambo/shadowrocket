@@ -17,7 +17,7 @@ use Monolog\Handler\HandlerInterface;
 
 class Logger extends ConfigRequired implements LauncherModuleInterface
 {
-    public function __construct($config)
+    public function init(array $config = array())
     {
         $this->setConfig($config);
         $this->setRequiredConfig(array(
