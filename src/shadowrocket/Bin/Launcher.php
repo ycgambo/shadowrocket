@@ -12,9 +12,9 @@
 
 namespace ShadowRocket\Bin;
 
-use ShadowRocket\Helper\Configurable;
-use ShadowRocket\Helper\ConfigRequired;
-use ShadowRocket\Helper\LauncherModuleInterface;
+use ShadowRocket\Module\Configurable;
+use ShadowRocket\Module\ConfigRequired;
+use ShadowRocket\Module\LauncherModuleInterface;
 use Workerman\Worker;
 
 class Launcher extends Configurable
@@ -69,18 +69,24 @@ class Launcher extends Configurable
         }
 
         /**
+         * remove tailing _ and numbers
+         *
          * change   server, server1, server_1, server_test
          * into     Server, Server,  Server,   ServerTest
+         *
+         * then attach namespace in front of it
          */
-        $class_name = preg_replace('/(.+?)_?\\d+$/', '$1', $module_name);
-        $class_name = str_replace('_', '', ucwords($class_name, '_'));
+        $class = preg_replace('/(.+?)[_\\d]*$/', '$1', $module_name);
+        $class = str_replace('_', ' ', $class);
+        $class = str_replace(' ', '', ucwords($class));
+        $class = '\\ShadowRocket\\Module\\' . $class;
 
         $order = self::getLaunchOrder($module_name);
-        if (!is_array(self::$_modules[$order])) {
+        if (!isset(self::$_modules[$order])) {
             self::$_modules[$order] = array();
         }
         try {
-            self::$_modules[$order][] = new $class_name($config);
+            self::$_modules[$order][] = new $class($config);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -94,7 +100,8 @@ class Launcher extends Configurable
 
         /* Check configurations of enabled config required modules */
         array_walk_recursive(self::$_modules, function ($module, $key) {
-            if ($module['enabled'] == false) {
+            if (($module instanceof Configurable) &&
+                ($module::getConfig('enabled') == false)) {
                 return;
             }
 
@@ -109,7 +116,8 @@ class Launcher extends Configurable
         /* Prepare these enabled modules by it's launch order */
         foreach (self::$_modules as $order => $modules) {
             foreach (self::$_modules[$order] as $module) {
-                if ($module['enabled'] == false) {
+                if (($module instanceof Configurable) &&
+                    ($module::getConfig('enabled') == false)) {
                     continue;
                 }
 

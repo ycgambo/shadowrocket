@@ -10,7 +10,7 @@
  * @license    MIT License <http://www.opensource.org/licenses/mit-license.html>
  */
 
-namespace ShadowRocket\Helper;
+namespace ShadowRocket\Module;
 
 class Configurable
 {

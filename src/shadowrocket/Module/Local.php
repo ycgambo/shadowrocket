@@ -12,8 +12,8 @@
 
 namespace ShadowRocket\Bin;
 
-use ShadowRocket\Helper\ConfigRequired;
-use ShadowRocket\Helper\LauncherModuleInterface;
+use ShadowRocket\Module\ConfigRequired;
+use ShadowRocket\Module\LauncherModuleInterface;
 use ShadowRocket\Net\Connection;
 
 class Local extends ConfigRequired implements LauncherModuleInterface
