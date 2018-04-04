@@ -94,6 +94,19 @@ class Launcher extends Configurable
 
     public static function launch(array $configs)
     {
+        if (!extension_loaded('pcntl')) {
+            throw new \Exception(
+                'Require pcntl extension. See http://doc3.workerman.net/install/install.html' . PHP_EOL
+            );
+        }
+        if (!extension_loaded('posix')) {
+            throw new \Exception(
+                'Require posix extension. See http://doc3.workerman.net/install/install.html' . PHP_EOL
+            );
+        }
+
+        /* save config and create modules */
+        self::setConfig($configs);
         foreach ($configs as $module_name => $config) {
             self::addModule($module_name, $config);
         }
@@ -127,10 +140,26 @@ class Launcher extends Configurable
                     } catch (\Exception $e) {
                         throw $e;
                     }
+
+                    $module::setConfigItems(array('__is_ready' => true));
                 }
             }
         }
 
         Worker::runAll();
+    }
+
+    public static function isModuleReady($module_name)
+    {
+        $module_name = strtolower($module_name);
+        foreach (self::$_modules as $order => $modules) {
+            foreach (self::$_modules[$order] as $module) {
+                if (($module instanceof Configurable) &&
+                    ($module::getConfig('name') == $module_name)) {
+                    return $module::getConfig('__is_ready');
+                }
+            }
+        }
+        return false;
     }
 }
