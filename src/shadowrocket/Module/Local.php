@@ -20,10 +20,10 @@ class Local extends ConfigRequired implements LauncherModuleInterface
 {
     public $workers = array();
 
-    public function __construct(array $config = array())
+    public function init(array $config = array())
     {
-        self::setConfig($config);
-        self::setRequiredConfig(array(
+        $this->setConfig($config);
+        $this->setRequiredConfig(array(
             'server',
             'port',
             'password',
@@ -35,7 +35,7 @@ class Local extends ConfigRequired implements LauncherModuleInterface
 
     public function getReady()
     {
-        array_push($this->workers, Connection::createLocalWorker(self::getConfig(), 'tcp'));
-        array_push($this->workers, Connection::createLocalWorker(self::getConfig(),'udp'));
+        array_push($this->workers, Connection::createLocalWorker($this->getConfig(), 'tcp'));
+        array_push($this->workers, Connection::createLocalWorker($this->getConfig(),'udp'));
     }
 }

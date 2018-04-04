@@ -12,6 +12,8 @@
 
 namespace ShadowRocket\Net;
 
+use ShadowRocket\Bin\Launcher;
+use Monolog\Registry;
 use Workerman\Worker;
 use Workerman\Connection\AsyncTcpConnection;
 
@@ -284,13 +286,22 @@ class Connection
                 $header_len = $addr_len + 4;
                 break;
             case Connection::ADDRTYPE_IPV6:
-                // todo: not sure, log buffer
                 $dst_addr = implode('.', array_map(function ($chr) {
                     return ord($chr);
                 }, str_split(substr($buffer, 1, 16), 1)));
                 $port_data = unpack('n', substr($buffer, 17, 2));
                 $dst_port = $port_data[1];
                 $header_len = 19;
+
+                /* not sure, log this */
+                if (Launcher::isModuleReady('shadowrocket_logger')) {
+                    Registry::getInstance('shadowrocket_logger')->debug('incoming ipv6', array(
+                            'dst_addr' => $dst_addr,
+                            'port_data' => $port_data,
+                            'dst_port' => $dst_port,
+                        )
+                    );
+                }
                 break;
             default:
                 return array();

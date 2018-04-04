@@ -17,8 +17,10 @@ use ShadowRocket\Module\ConfigRequired;
 use ShadowRocket\Module\LauncherModuleInterface;
 use Workerman\Worker;
 
-class Launcher extends Configurable
+class Launcher
 {
+    private static $_config;
+
     /**
      * classes to be launched
      */
@@ -81,32 +83,50 @@ class Launcher extends Configurable
         $class = str_replace(' ', '', ucwords($class));
         $class = '\\ShadowRocket\\Module\\' . $class;
 
+        try {
+            $module = new $class();
+            if ($module instanceof LauncherModuleInterface) {
+                $module->init($config);
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
         $order = self::getLaunchOrder($module_name);
         if (!isset(self::$_modules[$order])) {
             self::$_modules[$order] = array();
         }
-        try {
-            self::$_modules[$order][] = new $class($config);
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        self::$_modules[$order][] = $module;
     }
 
     public static function launch(array $configs)
     {
+        if (!extension_loaded('pcntl')) {
+            throw new \Exception(
+                'Require pcntl extension. See http://doc3.workerman.net/install/install.html' . PHP_EOL
+            );
+        }
+        if (!extension_loaded('posix')) {
+            throw new \Exception(
+                'Require posix extension. See http://doc3.workerman.net/install/install.html' . PHP_EOL
+            );
+        }
+
+        /* save config and create modules */
+        self::$_config = $configs;
         foreach ($configs as $module_name => $config) {
             self::addModule($module_name, $config);
         }
 
         /* Check configurations of enabled config required modules */
-        array_walk_recursive(self::$_modules, function ($module, $key) {
+        array_walk_recursive(self::$_modules, function ($module) {
             if (($module instanceof Configurable) &&
-                ($module::getConfig('enabled') == false)) {
+                ($module->getConfig('enabled') == false)) {
                 return;
             }
 
             if ($module instanceof ConfigRequired) {
-                if ($module::hasRequiredConfig() && ($missing_config = $module::getMissingConfig())) {
+                if ($module->hasRequiredConfig() && ($missing_config = $module->getMissingConfig())) {
                     throw new \Exception("Missing config of {$module['name']} :"
                         . implode(', ', $missing_config));
                 }
@@ -117,7 +137,7 @@ class Launcher extends Configurable
         foreach (self::$_modules as $order => $modules) {
             foreach (self::$_modules[$order] as $module) {
                 if (($module instanceof Configurable) &&
-                    ($module::getConfig('enabled') == false)) {
+                    ($module->getConfig('enabled') == false)) {
                     continue;
                 }
 
@@ -127,10 +147,26 @@ class Launcher extends Configurable
                     } catch (\Exception $e) {
                         throw $e;
                     }
+
+                    $module->setConfigItems(array('__is_ready' => true));
                 }
             }
         }
 
         Worker::runAll();
+    }
+
+    public static function isModuleReady($module_name)
+    {
+        $module_name = strtolower($module_name);
+        foreach (self::$_modules as $order => $modules) {
+            foreach (self::$_modules[$order] as $module) {
+                if (($module instanceof Configurable) &&
+                    ($module->getConfig('name') == $module_name)) {
+                    return $module->getConfig('__is_ready');
+                }
+            }
+        }
+        return false;
     }
 }

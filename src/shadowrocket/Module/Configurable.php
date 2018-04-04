@@ -14,51 +14,51 @@ namespace ShadowRocket\Module;
 
 class Configurable
 {
-    protected static $_config = array();
+    protected $_config = array();
 
-    public static function setConfig(array $config) {
-        return self::$_config = $config;
+    public function setConfig(array $config) {
+        return $this->_config = $config;
     }
 
-    public static function setConfigItems(array $config_items)
+    public function setConfigItems(array $config_items)
     {
         foreach ($config_items as $key => $value) {
-            self::$_config[$key] = $value;
+            $this->_config[$key] = $value;
         }
-        return self::$_config;
+        return $this->_config;
     }
 
-    public static function getConfig($key = null)
+    public function getConfig($key = null)
     {
         if (empty($key)) {
-            return self::$_config;
+            return $this->_config;
         }
         if (is_array($key)) {
-            return array_intersect_key(self::$_config, $key);
+            return array_intersect_key($this->_config, $key);
         }
-        return isset(self::$_config[$key]) ? self::$_config[$key] : null;
+        return isset($this->_config[$key]) ? $this->_config[$key] : null;
     }
 
-    public static function hasConfig($key) {
-        return array_key_exists($key, self::$_config);
+    public function hasConfig($key) {
+        return array_key_exists($key, $this->_config);
     }
 
-    public static function hasValidConfig($key) {
-        return isset(self::$_config[$key]);
+    public function hasValidConfig($key) {
+        return isset($this->_config[$key]);
     }
 
-    public static function combineConfig($key, array $config = array())
+    public function combineConfig($key, array $config = array())
     {
         return empty($config)
             ? self::getConfig($key)
             : array_replace(self::getConfig($key), $config);
     }
 
-    public static function delConfig($key)
+    public function delConfig($key)
     {
-        if (array_key_exists($key, self::$_config)) {
-            unset(self::$_config[$key]);
+        if (array_key_exists($key, $this->_config)) {
+            unset($this->_config[$key]);
         }
-        return self::$_config;
+        return $this->_config;
     }
 }
