@@ -64,7 +64,7 @@ ShadowRocket\Bin\Launcher::launch($config);
 现在我们可以发送数据包到127.0.0.1:1086，然后服务器123.456.78.9:8388将响应我们的请求。
 
 ### 更多文档
-- [在不同端口运行多个服务]
+- [在不同端口运行多个服务](/doc/multi-server-ch.md)
 - [Launcher加载器]
 - [组件]
 
