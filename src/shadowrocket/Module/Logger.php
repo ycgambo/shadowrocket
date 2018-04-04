@@ -13,6 +13,7 @@
 namespace ShadowRocket\Module;
 
 use Monolog\Handler\HandlerInterface;
+use Monolog\Registry;
 
 class Logger extends ConfigRequired implements LauncherModuleInterface
 {
@@ -39,6 +40,6 @@ class Logger extends ConfigRequired implements LauncherModuleInterface
         }
         $logger->setHandlers($handlers);
 
-        \MonoLog\Registry::addLogger($logger);
+        Registry::addLogger($logger);
     }
 }
