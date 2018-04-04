@@ -7,7 +7,7 @@ A composer component that helps you to build your own socket tunnel.
 ## Features
 1. TCP/UDP support
 2. IPV4/DOMAINNAME/IPV6 support
-3. monolog support
+3. Monolog Logger
 
 ### Coming Next
 - black list
@@ -31,42 +31,16 @@ A composer component that helps you to build your own socket tunnel.
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Bin\Launcher;
-
-Launcher::initialize();
-Launcher::addModule('server');
-Launcher::launchAll();
-```
-
-These code start a server by using default configurations.
-
-### Custom configuration
-
-```php
-<?php
-require_once __DIR__ . '/vendor/autoload.php';
-
-use ShadowRocket\Bin\Launcher;
-
 $config = array(
     'server' => array(
         'port'        => '8388',
         'password'    => 'mypass',
         'encryption'  => 'aes-256-cfb',
         'process_num' => 12,
-    )
+    ),
 );
-Launcher::initialize($config);
-Launcher::addModule('server');
 
-// change some server configurations to config another port
-Launcher::addModule('server', $changing_config = array(
-    'port'        => '8389',
-    'password'    => 'another_pass'
-));
-
-// launch these two servers
-Launcher::launchAll();
+ShadowRocket\Bin\Launcher::launch($config);
 ```
 
 ### Run a local proxy
@@ -74,8 +48,6 @@ Launcher::launchAll();
 ```php
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
-
-use ShadowRocket\Bin\Launcher;
 
 $config = array(
     'local' => array(
@@ -87,12 +59,16 @@ $config = array(
         'process_num' => 12,
     )
 );
-Launcher::initialize($config);
-Launcher::addModule('local');
-Launcher::launchAll();
+
+ShadowRocket\Bin\Launcher::launch($config);
 ```
 
 Now we can pass data to 127.0.0.1:1086 and server 123.456.78.9:8388 will reply.
+
+### More docs
+- [Run multi server on different port]
+- [Launcher]
+- [Modules]
 
 ## Want a client APP?
 

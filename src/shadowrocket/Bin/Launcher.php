@@ -1,15 +1,32 @@
 <?php
+/**
+ * This file is part of shadowrocket.
+ *
+ * @file       Launcher.php
+ * @author     ycgambo
+ * @create     4/4/18 9:01 AM
+ * @update     4/4/18 9:01 AM
+ * @copyright  shadowrocket <https://github.com/ycgambo/shadowrocket>
+ * @license    MIT License <http://www.opensource.org/licenses/mit-license.html>
+ */
 
 namespace ShadowRocket\Bin;
 
+use ShadowRocket\Helper\Configurable;
 use ShadowRocket\Helper\ConfigRequired;
-
 use ShadowRocket\Helper\LauncherModuleInterface;
 use Workerman\Worker;
 
-class Launcher extends ConfigRequired
+class Launcher extends Configurable
 {
+    /**
+     * classes to be launched
+     */
     private static $_modules = array();
+
+    /**
+     * defined launch sequence of $_modules
+     */
     private static $_launch_echelon = array(
         /* 1st */
         array('logger'),
@@ -19,42 +36,31 @@ class Launcher extends ConfigRequired
         array('server', 'local'),
     );
 
-    public static function initialize(array $config = array())
-    {
-        self::setConfig(array(
-            'server' => array(
-                'port' => '8388',
-                'password' => 'mypass',
-                'encryption' => 'aes-256-cfb',
-                'process_num' => 12,
-            ),
-            'local' => array(
-                'server' => '127.0.0.1',
-                'port' => '8388',
-                'password' => 'mypass',
-                'encryption' => 'aes-256-cfb',
-                'local_port' => '1086',
-                'process_num' => 12,
-            ),
-        ));
-        self::setConfigItems($config);
-    }
-
-    protected static function getLaunchOrder($key)
+    /**
+     * @param string $module_name the name of module
+     * @return int
+     */
+    protected static function getLaunchOrder($module_name)
     {
         foreach (self::$_launch_echelon as $order => $echelon) {
-            if (in_array($key, $echelon)) {
-                return $order;
+            if (in_array($module_name, $echelon)) {
+                return intval($order);
             }
         }
-        return count(self::$_launch_echelon); // launch last
+        return count(self::$_launch_echelon);
     }
 
-    public static function addModule($module_name, array $config = array())
+    /**
+     * Create module and push it into an array in self::$modules[$order]
+     * $order is the launch order calculated by self::getLaunchOrder($module_name)
+     *
+     * @param string $module_name
+     * @param array $config
+     * @throws \Exception
+     */
+    protected static function addModule($module_name, array $config = array())
     {
         $module_name = strtolower($module_name);
-        $config = self::combineConfig($module_name, $config);
-
         if (!isset($config['name'])) {
             $config['name'] = $module_name;
         }
@@ -62,22 +68,31 @@ class Launcher extends ConfigRequired
             $config['enabled'] = true;
         }
 
+        /**
+         * change   server, server1, server_1, server_test
+         * into     Server, Server,  Server,   ServerTest
+         */
+        $class_name = preg_replace('/(.+?)_?\\d+$/', '$1', $module_name);
+        $class_name = str_replace('_', '', ucwords($class_name, '_'));
+
         $order = self::getLaunchOrder($module_name);
         if (!is_array(self::$_modules[$order])) {
             self::$_modules[$order] = array();
         }
-
-
-        $module_name = str_replace('_', '', ucwords($module_name, '_'));
         try {
-            self::$_modules[$order][] = new $module_name($config);
+            self::$_modules[$order][] = new $class_name($config);
         } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public static function launchAll()
+    public static function launch(array $configs)
     {
+        foreach ($configs as $module_name => $config) {
+            self::addModule($module_name, $config);
+        }
+
+        /* Check configurations of enabled config required modules */
         array_walk_recursive(self::$_modules, function ($module, $key) {
             if ($module['enabled'] == false) {
                 return;
@@ -91,6 +106,7 @@ class Launcher extends ConfigRequired
             }
         });
 
+        /* Prepare these enabled modules by it's launch order */
         foreach (self::$_modules as $order => $modules) {
             foreach (self::$_modules[$order] as $module) {
                 if ($module['enabled'] == false) {

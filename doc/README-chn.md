@@ -5,7 +5,7 @@
 ## 特点
 1. 支持TCP/UDP
 2. 支持IPV4/DOMAINNAME/IPV6
-3. monolog日志系统
+3. Monolog日志系统
 
 ### 即将实现的特点
 - 黑名单
@@ -29,51 +29,23 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use ShadowRocket\Bin\Launcher;
-
-Launcher::initialize();
-Launcher::addModule('server');
-Launcher::launchAll();
-```
-
-以上代码将按默认配置启动一个服务器
-
-### 自定义配置
-
-```php
-<?php
-require_once __DIR__ . '/vendor/autoload.php';
-
-use ShadowRocket\Bin\Launcher;
-
 $config = array(
     'server' => array(
         'port'        => '8388',
         'password'    => 'mypass',
         'encryption'  => 'aes-256-cfb',
         'process_num' => 12,
-    )
+    ),
 );
-Launcher::initialize($config);
-Launcher::addModule('server');
 
-// 更改某部分配置以启动另一个服务器端口
-Launcher::addModule('server', $changing_config = array(
-    'port'        => '8389',
-    'password'    => 'another_pass'
-));
-
-// 启动这两个服务器
-Launcher::launchAll();
+ShadowRocket\Bin\Launcher::launch($config);
 ```
 
-### 启动本地代理
+### 运行本地代理
 
 ```php
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
-
-use ShadowRocket\Bin\Launcher;
 
 $config = array(
     'local' => array(
@@ -85,12 +57,16 @@ $config = array(
         'process_num' => 12,
     )
 );
-Launcher::initialize($config);
-Launcher::addModule('local');
-Launcher::launchAll();
+
+ShadowRocket\Bin\Launcher::launch($config);
 ```
 
 现在我们可以发送数据包到127.0.0.1:1086，然后服务器123.456.78.9:8388将响应我们的请求。
+
+### 更多文档
+- [在不同端口运行多个服务]
+- [Launcher加载器]
+- [组件]
 
 ## 使用本地代理APP
 
