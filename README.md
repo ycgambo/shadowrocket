@@ -1,6 +1,6 @@
 # shadowrocket
 
-A composer component that helps you to build your own socket tunnel.
+A socks5 proxy to build your own shadowsocks private network. PHP based & Composer supported.
 
 [中文文档](doc/README-chn.md)
 
@@ -63,7 +63,24 @@ $config = array(
 ShadowRocket\Bin\Launcher::launch($config);
 ```
 
-Now we can pass data to 127.0.0.1:1086 and server 123.456.78.9:8388 will reply.
+This means we want to pass data to local proxy 127.0.0.1:1086 which 
+will request proxy server 123.456.78.9:8388 for reply.
+
+### Fire your script up
+
+Assuming your script is named as start.php, in which contains code to launch the Launcher.
+
+To run as daemon:
+
+    php start.php start -d
+
+To stop your script:
+
+    php start.php stop
+
+To check status:
+
+    php start.php status
 
 ### More docs
 - [Run multi server on different port](/doc/multi-server.md)
