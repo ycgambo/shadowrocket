@@ -1,13 +1,13 @@
 # shadowrocket
 
-一个帮助你建立自己的socket隧道的composer组件。
+协助你建立自己的shadowsocks私有网络的socks5代理。基于PHP开发，支持Composer。
 
-## 特点
+## 特性
 1. 支持TCP/UDP
 2. 支持IPV4/DOMAINNAME/IPV6
 3. Monolog日志系统
 
-### 即将实现的特点
+### 即将实现的特性
 - 黑名单
 - 服务管理器
 - 用户管理
@@ -61,7 +61,25 @@ $config = array(
 ShadowRocket\Bin\Launcher::launch($config);
 ```
 
-现在我们可以发送数据包到127.0.0.1:1086，然后服务器123.456.78.9:8388将响应我们的请求。
+这代表着我们想要发送数据包到本地代理127.0.0.1:1086，
+它会请求代理服务器123.456.78.9:8388的响应。
+
+### 启动脚本
+
+假设你的脚本命名为start.php,其中包含了启动Launcher的代码。
+
+作为守护进程启动:
+
+    php start.php start -d
+
+停止守护进程:
+
+    php start.php stop
+
+查看状态:
+
+    php start.php status
+
 
 ### 更多文档
 - [在不同端口运行多个服务](/doc/multi-server-ch.md)
