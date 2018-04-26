@@ -84,8 +84,8 @@ To check status:
 
 ### More docs
 - [Run multi server on different port](/doc/multi-server.md)
-- [Launcher]
-- [Modules]
+- [Launcher](/doc/launcher.md)
+- [Modules](/doc/modules.md)
 
 ## Want a client APP?
 

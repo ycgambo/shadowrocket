@@ -34,3 +34,5 @@ ShadowRocket\Bin\Launcher::launch($config);
 - Each server is using different port
 - Support fully configurations of each server
 - Name them as Regular Expression format `server[_\d]*$`
+
+For more detail about name format, see [Launcher](/doc/launcher.md).

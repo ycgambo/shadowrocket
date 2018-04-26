@@ -34,3 +34,5 @@ ShadowRocket\Bin\Launcher::launch($config);
 - 每个服务器应该配置在不同的端口上
 - 每个服务器都应该提供全部配置项
 - 每个服务器的命名应符合正则表达式`server[_\d]*$`
+
+更多命名细节，请参考[Launcher](/doc/launcher-chn.md)

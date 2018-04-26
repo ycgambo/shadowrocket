@@ -83,8 +83,8 @@ ShadowRocket\Bin\Launcher::launch($config);
 
 ### 更多文档
 - [在不同端口运行多个服务](/doc/multi-server-ch.md)
-- [Launcher加载器]
-- [组件]
+- [Launcher加载器](/doc/launcher-chn.md)
+- [组件](/doc/modules-chn.md)
 
 ## 使用本地代理APP
 
