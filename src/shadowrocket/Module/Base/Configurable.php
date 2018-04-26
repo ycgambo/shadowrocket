@@ -4,20 +4,25 @@
  *
  * @file       Configurable.php
  * @author     ycgambo
- * @create     4/4/18 9:01 AM
- * @update     4/4/18 9:01 AM
+ * @update     4/26/18 10:09 AM
  * @copyright  shadowrocket <https://github.com/ycgambo/shadowrocket>
  * @license    MIT License <http://www.opensource.org/licenses/mit-license.html>
  */
 
-namespace ShadowRocket\Module;
+namespace ShadowRocket\Module\Base;
 
 class Configurable
 {
     protected $_config = array();
 
-    public function setConfig(array $config) {
+    public function resetConfig(array $config)
+    {
         return $this->_config = $config;
+    }
+
+    public function setConfigItem($key, $value)
+    {
+        return $this->_config[$key] = $value;
     }
 
     public function setConfigItems(array $config_items)
@@ -39,11 +44,13 @@ class Configurable
         return isset($this->_config[$key]) ? $this->_config[$key] : null;
     }
 
-    public function hasConfig($key) {
+    public function hasConfig($key)
+    {
         return array_key_exists($key, $this->_config);
     }
 
-    public function hasValidConfig($key) {
+    public function hasValidConfig($key)
+    {
         return isset($this->_config[$key]);
     }
 

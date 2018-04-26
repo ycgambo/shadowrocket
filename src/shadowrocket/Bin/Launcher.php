@@ -4,17 +4,16 @@
  *
  * @file       Launcher.php
  * @author     ycgambo
- * @create     4/4/18 9:01 AM
- * @update     4/4/18 9:01 AM
+ * @update     4/26/18 10:09 AM
  * @copyright  shadowrocket <https://github.com/ycgambo/shadowrocket>
  * @license    MIT License <http://www.opensource.org/licenses/mit-license.html>
  */
 
 namespace ShadowRocket\Bin;
 
-use ShadowRocket\Module\Configurable;
-use ShadowRocket\Module\ConfigRequired;
-use ShadowRocket\Module\LauncherModuleInterface;
+use ShadowRocket\Module\Base\Configurable;
+use ShadowRocket\Module\Base\ConfigRequired;
+use ShadowRocket\Module\Base\LauncherModuleInterface;
 use Workerman\Worker;
 
 class Launcher
@@ -24,6 +23,7 @@ class Launcher
     /**
      * classes to be launched
      */
+    private static $_echeloned_modules = array();
     private static $_modules = array();
 
     /**
@@ -66,20 +66,21 @@ class Launcher
         if (!isset($config['name'])) {
             $config['name'] = $module_name;
         }
-        if (!isset($config['enabled'])) {
-            $config['enabled'] = true;
+        if (!isset($config['__enabled'])) {
+            $config['__enabled'] = true;
         }
 
+        // remove tailing _ and numbers
+        $base_module_name = preg_replace('/(.+?)[_\\d]*$/', '$1', $module_name);
+
         /**
-         * remove tailing _ and numbers
          *
          * change   server, server1, server_1, server_test
          * into     Server, Server,  Server,   ServerTest
          *
          * then attach namespace in front of it
          */
-        $class = preg_replace('/(.+?)[_\\d]*$/', '$1', $module_name);
-        $class = str_replace('_', ' ', $class);
+        $class = str_replace('_', ' ', $base_module_name);
         $class = str_replace(' ', '', ucwords($class));
         $class = '\\ShadowRocket\\Module\\' . $class;
 
@@ -88,15 +89,21 @@ class Launcher
             if ($module instanceof LauncherModuleInterface) {
                 $module->init($config);
             }
+            if (!($module instanceof Configurable)) {
+                foreach ($config as $name => $value) {
+                    $module->$name = $value;
+                }
+            }
         } catch (\Exception $e) {
             throw $e;
         }
 
-        $order = self::getLaunchOrder($module_name);
-        if (!isset(self::$_modules[$order])) {
-            self::$_modules[$order] = array();
+        $order = self::getLaunchOrder($base_module_name);
+        if (!isset(self::$_echeloned_modules[$order])) {
+            self::$_echeloned_modules[$order] = array();
         }
-        self::$_modules[$order][] = $module;
+        self::$_echeloned_modules[$order][] = $module;
+        self::$_modules[$config['name']] = $module;
     }
 
     public static function launch(array $configs)
@@ -118,26 +125,26 @@ class Launcher
             self::addModule($module_name, $config);
         }
 
-        /* Check configurations of enabled config required modules */
-        array_walk_recursive(self::$_modules, function ($module) {
-            if (($module instanceof Configurable) &&
-                ($module->getConfig('enabled') == false)) {
+        /* Check required configurations on enabled modules */
+        array_walk_recursive(self::$_echeloned_modules, function ($module) {
+            if ((($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
+                (property_exists($module, 'enable') && ($module->enable == false))) {
                 return;
             }
 
             if ($module instanceof ConfigRequired) {
-                if ($module->hasRequiredConfig() && ($missing_config = $module->getMissingConfig())) {
-                    throw new \Exception("Missing config of {$module['name']} :"
+                if ($module->declaredRequiredConfig() && ($missing_config = $module->getMissingConfig())) {
+                    throw new \Exception("Missing config of {$module->getConfig('name')} :"
                         . implode(', ', $missing_config));
                 }
             }
         });
 
-        /* Prepare these enabled modules by it's launch order */
-        foreach (self::$_modules as $order => $modules) {
-            foreach (self::$_modules[$order] as $module) {
-                if (($module instanceof Configurable) &&
-                    ($module->getConfig('enabled') == false)) {
+        /* Prepare enabled modules by it's launch order */
+        foreach (self::$_echeloned_modules as $order => $modules) {
+            foreach (self::$_echeloned_modules[$order] as $module) {
+                if ((($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
+                    (property_exists($module, 'enable') && ($module->enable == false))) {
                     continue;
                 }
 
@@ -147,8 +154,12 @@ class Launcher
                     } catch (\Exception $e) {
                         throw $e;
                     }
+                }
 
+                if ($module instanceof Configurable) {
                     $module->setConfigItems(array('__is_ready' => true));
+                } else {
+                    $module->__is_ready = true;
                 }
             }
         }
@@ -159,14 +170,18 @@ class Launcher
     public static function isModuleReady($module_name)
     {
         $module_name = strtolower($module_name);
-        foreach (self::$_modules as $order => $modules) {
-            foreach (self::$_modules[$order] as $module) {
-                if (($module instanceof Configurable) &&
-                    ($module->getConfig('name') == $module_name)) {
-                    return $module->getConfig('__is_ready');
-                }
-            }
+        $module = self::$_modules[$module_name];
+        if ($module instanceof Configurable) {
+            return $module->getConfig('__is_ready');
+        } else if (property_exists($module, '__is_ready')) {
+            return $module->__is_ready;
         }
         return false;
+    }
+
+    public static function getModule($module_name)
+    {
+        $module_name = strtolower($module_name);
+        return self::$_modules[$module_name];
     }
 }

@@ -9,7 +9,6 @@ $config = array(
         'process_num' => 12,
     ),
     'logger' => array(
-        'name' => 'shadowrocket_logger',
         'handlers' => array(
             new \Monolog\Handler\StreamHandler(__DIR__.'/sr.log', \Monolog\Logger::DEBUG),
         ),

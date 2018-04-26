@@ -4,16 +4,15 @@
  *
  * @file       Server.php
  * @author     ycgambo
- * @create     4/4/18 10:49 AM
- * @update     4/4/18 10:40 AM
+ * @update     4/26/18 10:09 AM
  * @copyright  shadowrocket <https://github.com/ycgambo/shadowrocket>
  * @license    MIT License <http://www.opensource.org/licenses/mit-license.html>
  */
 
 namespace ShadowRocket\Module;
 
-use ShadowRocket\Module\ConfigRequired;
-use ShadowRocket\Module\LauncherModuleInterface;
+use ShadowRocket\Module\Base\ConfigRequired;
+use ShadowRocket\Module\Base\LauncherModuleInterface;
 use ShadowRocket\Net\Connection;
 
 class Server extends ConfigRequired implements LauncherModuleInterface
@@ -22,8 +21,8 @@ class Server extends ConfigRequired implements LauncherModuleInterface
 
     public function init(array $config = array())
     {
-        $this->setConfig($config);
-        $this->setRequiredConfig(array(
+        $this->resetConfig($config);
+        $this->declareRequiredConfig(array(
             'port',
             'password',
             'encryption',

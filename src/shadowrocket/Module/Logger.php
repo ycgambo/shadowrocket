@@ -4,8 +4,7 @@
  *
  * @file       Logger.php
  * @author     ycgambo
- * @create     4/4/18 9:01 AM
- * @update     4/4/18 9:01 AM
+ * @update     4/26/18 10:09 AM
  * @copyright  shadowrocket <https://github.com/ycgambo/shadowrocket>
  * @license    MIT License <http://www.opensource.org/licenses/mit-license.html>
  */
@@ -14,21 +13,23 @@ namespace ShadowRocket\Module;
 
 use Monolog\Handler\HandlerInterface;
 use Monolog\Registry;
+use ShadowRocket\Module\Base\ConfigRequired;
+use ShadowRocket\Module\Base\LauncherModuleInterface;
 
 class Logger extends ConfigRequired implements LauncherModuleInterface
 {
     public function init(array $config = array())
     {
-        $this->setConfig($config);
-        $this->setRequiredConfig(array(
-            'name',
+        $this->resetConfig($config);
+        $this->declareRequiredConfig(array(
+            'logger_name' => 'shadowrocket_logger',
             'handlers',
         ));
     }
 
     public function getReady()
     {
-        $logger = new \Monolog\Logger($this->getConfig('name'));
+        $logger = new \Monolog\Logger($this->getConfig('logger_name'));
 
         $handlers = $this->getConfig('handlers');
         foreach ($handlers as $handler) {
@@ -41,5 +42,10 @@ class Logger extends ConfigRequired implements LauncherModuleInterface
         $logger->setHandlers($handlers);
 
         Registry::addLogger($logger);
+    }
+
+    public function __call($name, $arguments)
+    {
+        return Registry::getInstance($this->getConfig('logger_name'))->$name($arguments);
     }
 }

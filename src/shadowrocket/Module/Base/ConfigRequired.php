@@ -4,17 +4,16 @@
  *
  * @file       ConfigRequired.php
  * @author     ycgambo
- * @create     4/4/18 9:01 AM
- * @update     4/4/18 9:01 AM
+ * @update     4/26/18 10:09 AM
  * @copyright  shadowrocket <https://github.com/ycgambo/shadowrocket>
  * @license    MIT License <http://www.opensource.org/licenses/mit-license.html>
  */
 
-namespace ShadowRocket\Module;
+namespace ShadowRocket\Module\Base;
 
 class ConfigRequired extends Configurable
 {
-    public function setRequiredConfig($required)
+    public function declareRequiredConfig($required)
     {
         $this->setConfigItems(array('__required_config' => $required));
     }
@@ -24,7 +23,7 @@ class ConfigRequired extends Configurable
         return $this->getConfig('__required_config');
     }
 
-    public function hasRequiredConfig()
+    public function declaredRequiredConfig()
     {
         return $this->hasValidConfig('__required_config');
     }
@@ -32,11 +31,26 @@ class ConfigRequired extends Configurable
     public function getMissingConfig()
     {
         $rtn = array();
-        foreach ($this->getRequiredConfig() as $required) {
-            if (!$this->hasConfig($required)) {
-                $rtn[] = $required;
+        $defaults = array();
+        foreach ($this->getRequiredConfig() as $key => $value) {
+            if (is_numeric($key)) {
+                // $id => $required
+                if (!$this->hasConfig($value)) {
+                    $rtn[] = $value;
+                }
+            } else {
+                // $required => $default
+                $defaults[$key] = $value;
             }
         }
+
+        // check and set default config
+        foreach ($defaults as $required => $default) {
+            if (!$this->hasConfig($required)) {
+                $this->setConfigItems(array($required => $default));
+            }
+        }
+
         return $rtn;
     }
 }

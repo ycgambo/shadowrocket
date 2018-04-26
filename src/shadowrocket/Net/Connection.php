@@ -4,8 +4,7 @@
  *
  * @file       Connection.php
  * @author     ycgambo
- * @create     4/4/18 9:01 AM
- * @update     4/4/18 9:01 AM
+ * @update     4/26/18 10:09 AM
  * @copyright  shadowrocket <https://github.com/ycgambo/shadowrocket>
  * @license    MIT License <http://www.opensource.org/licenses/mit-license.html>
  */
@@ -294,8 +293,8 @@ class Connection
                 $header_len = 19;
 
                 /* not sure, log this */
-                if (Launcher::isModuleReady('shadowrocket_logger')) {
-                    Registry::getInstance('shadowrocket_logger')->debug('incoming ipv6', array(
+                if (Launcher::isModuleReady('logger')) {
+                    Launcher::getModule('logger')->debug('incoming ipv6', array(
                             'dst_addr' => $dst_addr,
                             'port_data' => $port_data,
                             'dst_port' => $dst_port,
