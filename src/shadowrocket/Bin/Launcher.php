@@ -66,8 +66,8 @@ class Launcher
         if (!isset($config['name'])) {
             $config['name'] = $module_name;
         }
-        if (!isset($config['__enabled'])) {
-            $config['__enabled'] = true;
+        if (!isset($config['enable'])) {
+            $config['enable'] = true;
         }
 
         // remove tailing _ and numbers
@@ -127,7 +127,7 @@ class Launcher
 
         /* Check required configurations on enabled modules */
         array_walk_recursive(self::$_echeloned_modules, function ($module) {
-            if ((($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
+            if ((($module instanceof Configurable) && ($module->getConfig('enable') === false)) ||
                 (property_exists($module, 'enable') && ($module->enable == false))) {
                 return;
             }
@@ -143,7 +143,7 @@ class Launcher
         /* Prepare enabled modules by it's launch order */
         foreach (self::$_echeloned_modules as $order => $modules) {
             foreach (self::$_echeloned_modules[$order] as $module) {
-                if ((($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
+                if ((($module instanceof Configurable) && ($module->getConfig('enable') === false)) ||
                     (property_exists($module, 'enable') && ($module->enable == false))) {
                     continue;
                 }
