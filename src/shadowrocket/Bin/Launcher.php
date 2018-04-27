@@ -23,8 +23,8 @@ class Launcher
     /**
      * classes to be launched
      */
-    private static $_echeloned_modules = array();
     private static $_modules = array();
+    private static $_echeloned_modules = array();
 
     /**
      * defined launch sequence of $_modules
@@ -39,73 +39,21 @@ class Launcher
     );
 
     /**
-     * @param string $module_name the name of module
-     * @return int
+     * format: module_name => order
      */
-    protected static function getLaunchOrder($module_name)
-    {
-        foreach (self::$_launch_echelon as $order => $echelon) {
-            if (in_array($module_name, $echelon)) {
-                return intval($order);
-            }
-        }
-        return count(self::$_launch_echelon);
-    }
+    private static $_custom_order = array();
+    /**
+     * call setLaunchOrder() will change this to true.
+     */
+    private static $_is_custom_order = false;
 
     /**
-     * Create module and push it into an array in self::$modules[$order]
-     * $order is the launch order calculated by self::getLaunchOrder($module_name)
+     * We can launch all the Modules by passing a array which contains the config of each module to it.
+     * In this array, each item should be a key-value pair and the key is the module name and the value is the config.
      *
-     * @param string $module_name
-     * @param array $config
+     * @param array $configs
      * @throws \Exception
      */
-    protected static function addModule($module_name, array $config = array())
-    {
-        $module_name = strtolower($module_name);
-        if (!isset($config['name'])) {
-            $config['name'] = $module_name;
-        }
-        if (!isset($config['enable'])) {
-            $config['enable'] = true;
-        }
-
-        // remove tailing _ and numbers
-        $base_module_name = preg_replace('/(.+?)[_\\d]*$/', '$1', $module_name);
-
-        /**
-         *
-         * change   server, server1, server_1, server_test
-         * into     Server, Server,  Server,   ServerTest
-         *
-         * then attach namespace in front of it
-         */
-        $class = str_replace('_', ' ', $base_module_name);
-        $class = str_replace(' ', '', ucwords($class));
-        $class = '\\ShadowRocket\\Module\\' . $class;
-
-        try {
-            $module = new $class();
-            if ($module instanceof LauncherModuleInterface) {
-                $module->init($config);
-            }
-            if (!($module instanceof Configurable)) {
-                foreach ($config as $name => $value) {
-                    $module->$name = $value;
-                }
-            }
-        } catch (\Exception $e) {
-            throw $e;
-        }
-
-        $order = self::getLaunchOrder($base_module_name);
-        if (!isset(self::$_echeloned_modules[$order])) {
-            self::$_echeloned_modules[$order] = array();
-        }
-        self::$_echeloned_modules[$order][] = $module;
-        self::$_modules[$config['name']] = $module;
-    }
-
     public static function launch(array $configs)
     {
         if (!extension_loaded('pcntl')) {
@@ -126,8 +74,8 @@ class Launcher
         }
 
         /* Check required configurations on enabled modules */
-        array_walk_recursive(self::$_echeloned_modules, function ($module) {
-            if ((($module instanceof Configurable) && ($module->getConfig('enable') === false)) ||
+        array_walk(self::$_modules, function ($module) {
+            if ((($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
                 (property_exists($module, 'enable') && ($module->enable == false))) {
                 return;
             }
@@ -143,34 +91,214 @@ class Launcher
         /* Prepare enabled modules by it's launch order */
         foreach (self::$_echeloned_modules as $order => $modules) {
             foreach (self::$_echeloned_modules[$order] as $module) {
-                if ((($module instanceof Configurable) && ($module->getConfig('enable') === false)) ||
+                if ((($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
                     (property_exists($module, 'enable') && ($module->enable == false))) {
                     continue;
                 }
-
-                if ($module instanceof LauncherModuleInterface) {
-                    try {
-                        $module->getReady();
-                    } catch (\Exception $e) {
-                        throw $e;
-                    }
-                }
-
-                if ($module instanceof Configurable) {
-                    $module->setConfigItems(array('__is_ready' => true));
-                } else {
-                    $module->__is_ready = true;
-                }
+                self::getModuleReady($module);
             }
         }
 
         Worker::runAll();
     }
 
-    public static function isModuleReady($module_name)
+    /**
+     * If you want to add module after launch, Use this.
+     *
+     * @param $module_name
+     * @param array $config
+     * @throws \Exception
+     */
+    public static function supperaddModule($module_name, array $config)
+    {
+        /* append config and create modules */
+        self::$_config[$module_name] = $config;
+        $module = self::addModule($module_name, $config);
+
+        /* Check required configurations */
+        if ((($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
+            (property_exists($module, 'enable') && ($module->enable == false))) {
+            return;
+        }
+
+        if ($module instanceof ConfigRequired) {
+            if ($module->declaredRequiredConfig() && ($missing_config = $module->getMissingConfig())) {
+                throw new \Exception("Missing config of {$module->getConfig('name')} :"
+                    . implode(', ', $missing_config));
+            }
+        }
+
+        /* Get module ready */
+        if (!(
+            (($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
+            (property_exists($module, 'enable') && ($module->enable == false))
+        )) {
+            self::getModuleReady($module, true);
+        }
+    }
+
+    /**
+     * Create module and push it into an array in self::$modules[$order]
+     * $order is the launch order calculated by self::getLaunchOrder($module_name)
+     *
+     * @param string $module_name
+     * @param array $config
+     * @throws \Exception
+     * @return LauncherModuleInterface
+     */
+    protected static function addModule($module_name, array $config = array())
     {
         $module_name = strtolower($module_name);
-        $module = self::$_modules[$module_name];
+
+        self::setCommonConfig($module_name, $config);
+
+        try {
+            $module = self::createModule($module_name, $config);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        $order = self::getLaunchOrder($module_name);
+        if (!isset(self::$_echeloned_modules[$order])) {
+            self::$_echeloned_modules[$order] = array();
+        }
+        self::$_echeloned_modules[$order][] = $module;
+        self::$_modules[$config['name']] = $module;
+
+        return $module;
+    }
+
+    /**
+     * Modules may have common config, set the default value here.
+     *
+     * @param $module_name
+     * @param $config
+     */
+    protected static function setCommonConfig($module_name, & $config)
+    {
+        if (!isset($config['name'])) {
+            $config['name'] = $module_name;
+        }
+        if (!isset($config['enable'])) {
+            $config['enable'] = true;
+        }
+    }
+
+    /**
+     * Create the module class and call initConfig on it.
+     *
+     * @param $module_name
+     * @param $config
+     * @return mixed the module class
+     * @throws \Exception
+     */
+    protected static function createModule($module_name, $config)
+    {
+        // remove tailing underline and numbers
+        $base_module_name = preg_replace('/(.+?)[_\\d]*$/', '$1', strtolower($module_name));
+
+        /**
+         * change   server, server_test
+         * into     Server, ServerTest
+         *
+         * then attach namespace in front of it
+         */
+        $class = str_replace('_', ' ', $base_module_name);
+        $class = str_replace(' ', '', ucwords($class));
+        $class = '\\ShadowRocket\\Module\\' . $class;
+
+        try {
+            $module = new $class();
+            if ($module instanceof LauncherModuleInterface) {
+                $module->initConfig($config);
+            }
+            if (!($module instanceof Configurable)) {
+                foreach ($config as $name => $value) {
+                    $module->$name = $value;
+                }
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $module;
+    }
+
+    /**
+     * Use custom launch order instead of the default order echelon.
+     * @param array $order_map
+     */
+    public static function setLaunchOrder(array $order_map)
+    {
+        foreach ($order_map as $module_name => $order) {
+            self::$_custom_order[strtolower($module_name)] = $order;
+        }
+        self::$_is_custom_order = true;
+    }
+
+    /**
+     * Fake clear.
+     */
+    public static function clearLaunchOrder()
+    {
+        self::$_is_custom_order = false;
+    }
+
+    /**
+     * Return the last order if no proper order found
+     *
+     * @param string $module_name the name of module
+     * @return int
+     */
+    protected static function getLaunchOrder($module_name)
+    {
+        $module_name = strtolower($module_name);
+
+        if (self::$_is_custom_order) {
+            return isset(self::$_custom_order[$module_name])
+                ? self::$_custom_order[$module_name]
+                : count(self::$_custom_order);
+        }
+
+        // remove tailing underline and numbers
+        $base_module_name = preg_replace('/(.+?)[_\\d]*$/', '$1', $module_name);
+        foreach (self::$_launch_echelon as $order => $echelon) {
+            if (in_array($base_module_name, $echelon)) {
+                return intval($order);
+            }
+        }
+        return count(self::$_launch_echelon);
+    }
+
+    /**
+     * After config initialization, we can get module ready properly
+     *
+     * @param $module
+     * @param bool $superadd
+     * @throws \Exception
+     */
+    protected static function getModuleReady($module, $superadd = true)
+    {
+        try {
+            if ($superadd && method_exists($module, 'superadd')) {
+                $module->superadd();
+            } else if ($module instanceof LauncherModuleInterface) {
+                $module->getReady();
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        if ($module instanceof Configurable) {
+            $module->setConfigItem('__is_ready', true);
+        } else {
+            $module->__is_ready = true;
+        }
+    }
+
+    public static function isModuleReady($module_name)
+    {
+        $module = self::$_modules[strtolower($module_name)];
         if ($module instanceof Configurable) {
             return $module->getConfig('__is_ready');
         } else if (property_exists($module, '__is_ready')) {
@@ -181,7 +309,11 @@ class Launcher
 
     public static function getModule($module_name)
     {
-        $module_name = strtolower($module_name);
-        return self::$_modules[$module_name];
+        return self::$_modules[strtolower($module_name)];
+    }
+
+    public static function getModuleIfReady($module_name)
+    {
+        return self::isModuleReady($module_name) ? self::getModule($module_name) : null;
     }
 }

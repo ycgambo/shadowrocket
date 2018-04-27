@@ -12,6 +12,6 @@
 namespace ShadowRocket\Module\Base;
 
 interface LauncherModuleInterface {
-    public function init(array $config);
+    public function initConfig(array $config);
     public function getReady();
 }
