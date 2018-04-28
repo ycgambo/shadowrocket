@@ -8,13 +8,13 @@ Launcher is the entry point of shadowrocket.
 We can launch all the [Modules](/doc/modules.md) by passing a array which contains the config of each module to it. In
 this array, each item should be a key-value pair and the key is the module name and the value is the config. 
 
-#### Name format
+For more details about module names and their configurations, see [Modules](/doc/modules.md) 
+
+#### Module Name format
 
 It should be declared that the module name has certain connections with Modules, we can't name them casually.
 
-We also use this name to trace the corresponding module, so you can only use a name once.
-
-Simply, it's case insensitive snake_case module name with optional tailing id number.
+**Simply, it's case insensitive snake_case module name with optional tailing id number.**
 
 Let's explain it:
 
@@ -28,9 +28,11 @@ Example:
 
 Server, server, server1, server_2, module_name, module_name_3
 
-#### Config format
+#### Module Config format
 
-We pass an array to Launcher and each value in this array should also be an array which specifies the config of 
+We should pass an array to Launcher and each value in this array should also be an array which specifies the config of 
 corresponding module.
 
-For more details about module names and their configurations, see [Modules](/doc/modules.md) 
+**It's recommended to attach a name for each module config, which will help you to alias the module.**
+
+We will use this name to trace the corresponding module, so you can only use a config name once.
