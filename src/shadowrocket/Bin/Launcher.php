@@ -152,13 +152,15 @@ class Launcher
 
         self::setCommonConfig($module_name, $config);
 
+        // use module_name to create a module
         try {
             $module = self::createModule($module_name, $config);
         } catch (\Exception $e) {
             throw $e;
         }
 
-        $order = self::getLaunchOrder($module_name);
+        // use config['name'] to trace this module
+        $order = self::getLaunchOrder($config['name']);
         if (!isset(self::$_echeloned_modules[$order])) {
             self::$_echeloned_modules[$order] = array();
         }
@@ -195,7 +197,7 @@ class Launcher
     protected static function createModule($module_name, $config)
     {
         // remove tailing underline and numbers
-        $base_module_name = preg_replace('/(.+?)[_\\d]*$/', '$1', strtolower($module_name));
+        $base_module_name = preg_replace('/(.+?)[_\\d]*$/', '$1', $module_name);
 
         /**
          * change   server, server_test
@@ -226,6 +228,7 @@ class Launcher
 
     /**
      * Use custom launch order instead of the default order echelon.
+     *
      * @param array $order_map
      */
     public static function setLaunchOrder(array $order_map)
