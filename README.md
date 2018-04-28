@@ -7,7 +7,8 @@ A socks5 proxy to build your own shadowsocks private network. PHP based & Compos
 ## Features
 1. TCP/UDP support
 2. IPV4/DOMAINNAME/IPV6 support
-3. Monolog Logger
+3. Graceful restart
+4. Monolog Logger
 
 ### Coming Next
 - black list
@@ -78,9 +79,17 @@ To stop your script:
 
     php start.php stop
 
+To graceful restart：
+
+    php start.php reload
+
 To check status:
 
     php start.php status
+
+To check connections:
+
+    php start.php connections
 
 ### More docs
 - [Run multi server on different port](/doc/multi-server.md)
