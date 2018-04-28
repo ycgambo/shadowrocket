@@ -301,7 +301,7 @@ class Launcher
      * @param bool $superadd
      * @throws \Exception
      */
-    protected static function getModuleReady($module, $superadd = true)
+    protected static function getModuleReady($module, $superadd = false)
     {
         try {
             if ($superadd && method_exists($module, 'superadd')) {
