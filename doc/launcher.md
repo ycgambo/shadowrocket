@@ -33,6 +33,7 @@ Server, server, server1, server_2, module_name, module_name_3
 We should pass an array to Launcher and each value in this array should also be an array which specifies the config of 
 corresponding module.
 
-**It's recommended to attach a name for each module config, which will help you to alias the module.**
+**It's recommended to attach a name for each module config, which will help you to alias the module. 
+The default name is your module name**
 
 We will use this name to trace the corresponding module, so you can only use a config name once.
