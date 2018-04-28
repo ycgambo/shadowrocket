@@ -67,6 +67,8 @@ class Launcher
             );
         }
 
+        $configs = array_merge($configs, self::builtinModules());
+
         /* save config and create modules */
         self::$_config = $configs;
         foreach ($configs as $module_name => $config) {
@@ -135,6 +137,25 @@ class Launcher
         )) {
             self::getModuleReady($module, true);
         }
+    }
+
+    /**
+     * these are builtin module configurations
+     *
+     * @return array
+     * @throws \Exception
+     */
+    private static function builtinModules()
+    {
+        return array(
+            'logger__' => array(
+                'enable' => true,
+                'logger_name' => 'shadowrocket_builtin_logger',
+                'handlers' => array(
+                    new \Monolog\Handler\StreamHandler(__DIR__.'/shadowrocket.log', \Monolog\Logger::DEBUG),
+                ),
+            )
+        );
     }
 
     /**

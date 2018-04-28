@@ -22,7 +22,7 @@ class Logger extends ConfigRequired implements LauncherModuleInterface
     {
         $this->resetConfig($config);
         $this->declareRequiredConfig(array(
-            'logger_name' => 'shadowrocket_logger',
+            'logger_name',
             'handlers',
         ));
     }

@@ -293,7 +293,7 @@ class Connection
                 $header_len = 19;
 
                 /* not sure, log this */
-                if ($logger = Launcher::getModuleIfReady('logger')) {
+                if ($logger = Launcher::getModuleIfReady('logger__')) {
                     $logger->debug('incoming ipv6', array(
                             'dst_addr' => $dst_addr,
                             'port_data' => $port_data,
