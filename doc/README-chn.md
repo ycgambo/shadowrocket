@@ -2,10 +2,13 @@
 
 协助你建立自己的shadowsocks私有网络的socks5代理。基于PHP开发，支持Composer。
 
+[贡献代码](/doc/contributing.md)
+
 ## 特性
 1. 支持TCP/UDP
 2. 支持IPV4/DOMAINNAME/IPV6
-3. Monolog日志系统
+3. 平滑重启
+4. Monolog日志系统
 
 ### 即将实现的特性
 - 黑名单
@@ -75,10 +78,18 @@ ShadowRocket\Bin\Launcher::launch($config);
 停止守护进程:
 
     php start.php stop
+    
+平滑重启:
+
+    php start.php reload
 
 查看状态:
 
     php start.php status
+
+查看连接状态:
+
+    php start.php connections
 
 
 ### 更多文档
