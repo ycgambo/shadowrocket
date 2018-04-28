@@ -2,6 +2,8 @@
 
 协助你建立自己的shadowsocks私有网络的socks5代理。基于PHP开发，支持Composer。
 
+[贡献代码](/doc/contributing.md)
+
 ## 特性
 1. 支持TCP/UDP
 2. 支持IPV4/DOMAINNAME/IPV6

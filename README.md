@@ -2,7 +2,8 @@
 
 A socks5 proxy to build your own shadowsocks private network. PHP based & Composer supported.
 
-[中文文档](doc/README-chn.md)
+[中文文档](/doc/README-chn.md)
+[Contributing](/doc/contributing.md)
 
 ## Features
 1. TCP/UDP support
