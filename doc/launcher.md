@@ -10,7 +10,7 @@ this array, each item should be a key-value pair and the key is the module name 
 
 For more details about module names and their configurations, see [Modules](/doc/modules.md) 
 
-#### Module Name format
+#### #Module Name format
 
 It should be declared that the module name has certain connections with Modules, we can't name them casually.
 
@@ -28,7 +28,7 @@ Example:
 
 Server, server, server1, server_2, module_name, module_name_3
 
-#### Module Config format
+#### #Module Config format
 
 We should pass an array to Launcher and each value in this array should also be an array which specifies the config of 
 corresponding module.
