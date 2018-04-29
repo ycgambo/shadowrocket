@@ -34,6 +34,8 @@ class Connection
     const ADDRTYPE_IPV6 = 4;
     const ADDRTYPE_HOST = 3;
 
+    const VARIFIED = 99;
+
     public static function bind($proxy, $remote)
     {
         $remote->opposite = $proxy;

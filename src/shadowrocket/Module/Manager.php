@@ -42,15 +42,23 @@ class Manager extends ConfigRequired implements LauncherModuleInterface
             $client->stage = Connection::STAGE_INIT;
         };
 
-        $worker->onMessage = function ($client, $buffer) {
+        $worker->onMessage = function ($client, $buffer) use ($config) {
             switch ($client->stage) {
                 case Connection::STAGE_INIT:
-                case Connection::STAGE_ADDR:
-                    if ($logger = Launcher::getModuleIfReady('logger__')) {
-                        $logger->debug('buffer:', array('buffer' => $buffer));
+                    if ($buffer == $config['token']) {
+                        $client->stage = Connection::VARIFIED;
+                        $client->send(Manager::guideMsg());
                     }
+                    break;
+                case Connection::VARIFIED:
+                    return 'cmd';
             }
         };
+    }
+
+    public static function guideMsg()
+    {
+        return 'hello';
     }
 
 }
