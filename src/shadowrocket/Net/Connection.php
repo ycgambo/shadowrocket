@@ -137,7 +137,7 @@ class Connection
             'addr_type' => $addr_type,
             'dst_addr' => $dst_addr,
             'dst_port' => $dst_port,
-            'header_len' => $header_len,
+            'data' => substr($buffer, $header_len),
         );
     }
 }

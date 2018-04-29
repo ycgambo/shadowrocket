@@ -69,7 +69,7 @@ class Server extends ConfigRequired implements LauncherModuleInterface
                         // build tunnel to actual server
                         $address = "{$protocol}://{$request['dst_addr']}:{$request['dst_port']}";
                         $remote = ($protocol == 'udp')
-                            ? new UdpConnection(socket_create(AF_INET, SOCK_DGRAM, SOL_UDP), $address)
+                            ? new UdpConnection(socket_create( AF_INET, SOCK_DGRAM, SOL_UDP ), $address)
                             : new AsyncTcpConnection($address);
 
                         Connection::bind($client, $remote);
@@ -85,8 +85,8 @@ class Server extends ConfigRequired implements LauncherModuleInterface
 
                         $remote->connect();
 
-                        if (strlen($buffer) > $request['header_len']) {
-                            $remote->send(substr($buffer, $request['header_len']));
+                        if ($request['data']) {
+                            $remote->send($request['data']);
                         }
 
                         $client->state = Connection::STAGE_STREAM;
