@@ -69,7 +69,7 @@ class Server extends ConfigRequired implements LauncherModuleInterface
                         // build tunnel to actual server
                         $address = "{$protocol}://{$request['dst_addr']}:{$request['dst_port']}";
                         $remote = ($protocol == 'udp')
-                            ? new UdpConnection(socket_create( AF_INET, SOCK_DGRAM, SOL_UDP ), $address)
+                            ? new UdpConnection(socket_create(AF_INET, SOCK_DGRAM, SOL_UDP), $address)
                             : new AsyncTcpConnection($address);
 
                         Connection::bind($client, $remote);
@@ -79,14 +79,14 @@ class Server extends ConfigRequired implements LauncherModuleInterface
                             $remote->opposite->send($remote->opposite->cipher->encrypt($buffer));
                         };
                         // 当shadowsocks客户端发来数据时，解密数据，并发给远程服务端
-                        $client->onMessage = function ($proxy, $data) {
-                            $proxy->opposite->send($proxy->cipher->decrypt($data));
+                        $client->onMessage = function ($client, $data) {
+                            $client->opposite->send($client->cipher->decrypt($data));
                         };
 
                         $remote->connect();
 
-                        if ($request['data']) {
-                            $remote->send($request['data']);
+                        if (strlen($buffer) > $request['header_len']) {
+                            $remote->send(substr($buffer, $request['header_len']));
                         }
 
                         $client->state = Connection::STAGE_STREAM;
