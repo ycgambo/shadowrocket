@@ -26,7 +26,9 @@ class Guarder extends ConfigRequired implements LauncherModuleInterface
     public function initConfig(array $config = array())
     {
         $this->resetConfig($config);
-        $this->declareRequiredConfig(array());
+        $this->declareRequiredConfig(array(
+            'instance' => new self(),
+        ));
     }
 
     public function getReady()
@@ -34,7 +36,18 @@ class Guarder extends ConfigRequired implements LauncherModuleInterface
 
     }
 
-    public static function reject($request, $port)
+    /**
+     * Custom Guarder support. just pass instance in and implement block method.
+     * @param $request
+     * @param $port
+     * @return mixed
+     */
+    public function reject($request, $port)
+    {
+        return $this->getConfig('instance')->block($request, $port);
+    }
+
+    public function block($request, $port)
     {
         if (isset(self::$counter[$port])) {
             self::$counter[$port] = self::$counter[$port] + 1;
