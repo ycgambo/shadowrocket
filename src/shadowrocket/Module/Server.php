@@ -52,19 +52,26 @@ class Server extends ConfigRequired implements LauncherModuleInterface
         $worker = new Worker($protocol . '://0.0.0.0:' . $config['port']);
         $worker->count = $config['process_num'];
         $worker->name = 'shadowsocks-server';
+        $worker->reusePort = true;
 
         $worker->onConnect = function ($client) use ($config) {
             $client->stage = Connection::STAGE_INIT;
             $client->cipher = new Encryptor($config['password'], $config['encryption']);
         };
 
-        $worker->onMessage = function ($client, $buffer) use ($protocol) {
+        $worker->onMessage = function ($client, $buffer) use ($config, $protocol) {
             switch ($client->stage) {
                 case Connection::STAGE_INIT:
                 case Connection::STAGE_ADDR:
                     $buffer = $client->cipher->decrypt($buffer);
 
                     if ($request = Connection::parseSocket5Request($buffer)) {
+
+                        if ($guarder = Launcher::getModuleIfReady('guarder')) {
+                            if (!$guarder->pass($request, $config['port'])) {
+                                Worker::stopAll();
+                            }
+                        }
 
                         // build tunnel to actual server
                         $address = "{$protocol}://{$request['dst_addr']}:{$request['dst_port']}";

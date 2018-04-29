@@ -11,7 +11,8 @@ $config = array(
     'manager' => array(
         'port' => 6001,
         'token' => 123456,
-    )
+    ),
+    'guarder' => array(),
 );
 
 ShadowRocket\Bin\Launcher::launch($config);

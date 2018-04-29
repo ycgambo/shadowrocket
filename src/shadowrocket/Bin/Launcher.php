@@ -33,7 +33,7 @@ class Launcher
         /* 1st */
         array('logger'),
         /* 2nd */
-        array(),
+        array('guarder'),
         /* 3rd */
         array('server', 'local', 'manager'),
     );

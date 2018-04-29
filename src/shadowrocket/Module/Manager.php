@@ -51,15 +51,20 @@ class Manager extends ConfigRequired implements LauncherModuleInterface
                     }
                     break;
                 case Connection::VARIFIED:
-                    if ($buffer == 'add server -n server_test -p 8381 -s mypass') {
-                        Launcher::supperaddModule('server', array(
-                            'name' => 'server_test',
-                            'port' => 8381,
-                            'password' => 'mypass',
-                            'encryption' => 'aes-256-cfb',
-                            'process_num' => 4,
-                        ));
-                    }
+                    Launcher::supperaddModule('server', array(
+                        'name' => 'server_test',
+                        'port' => 8381,
+                        'password' => 'mypass',
+                        'encryption' => 'aes-256-cfb',
+                        'process_num' => 4,
+                    ));
+                    Launcher::supperaddModule('server', array(
+                        'name' => 'server_test',
+                        'port' => 8382,
+                        'password' => 'mypass',
+                        'encryption' => 'aes-256-cfb',
+                        'process_num' => 4,
+                    ));
             }
         };
     }
