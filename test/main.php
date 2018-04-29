@@ -8,11 +8,10 @@ $config = array(
         'encryption' => 'aes-256-cfb',
         'process_num' => 12,
     ),
-    'logger' => array(
-        'handlers' => array(
-            new \Monolog\Handler\StreamHandler(__DIR__.'/sr.log', \Monolog\Logger::DEBUG),
-        ),
-    ),
+    'manager' => array(
+        'port' => 6001,
+        'token' => 123456,
+    )
 );
 
 ShadowRocket\Bin\Launcher::launch($config);

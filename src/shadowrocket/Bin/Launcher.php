@@ -35,7 +35,7 @@ class Launcher
         /* 2nd */
         array(),
         /* 3rd */
-        array('server', 'local'),
+        array('server', 'local', 'manager'),
     );
 
     /**
