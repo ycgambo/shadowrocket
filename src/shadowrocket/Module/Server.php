@@ -86,7 +86,7 @@ class Server extends ConfigRequired implements LauncherModuleInterface
                         $remote->connect();
 
                         if ($request['data']) {
-                            $remote->send(substr($buffer, $request['data']));
+                            $remote->send($request['data']);
                         }
 
                         $client->state = Connection::STAGE_STREAM;
