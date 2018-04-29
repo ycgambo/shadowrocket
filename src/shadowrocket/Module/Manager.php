@@ -51,27 +51,29 @@ class Manager extends ConfigRequired implements LauncherModuleInterface
                     }
                     break;
                 case Connection::VARIFIED:
-                    Launcher::supperaddModule('server', array(
-                        'name' => 'server_test',
-                        'port' => 8381,
-                        'password' => 'mypass',
-                        'encryption' => 'aes-256-cfb',
-                        'process_num' => 4,
-                    ));
-                    Launcher::supperaddModule('server', array(
-                        'name' => 'server_test',
-                        'port' => 8382,
-                        'password' => 'mypass',
-                        'encryption' => 'aes-256-cfb',
-                        'process_num' => 4,
-                    ));
+                    // todo: cmd parser
+                    // this is how to superadd module
+//                    Launcher::superaddModule('server', array(
+//                        'name' => 'server_test',
+//                        'port' => 8381,
+//                        'password' => 'mypass',
+//                        'encryption' => 'aes-256-cfb',
+//                        'process_num' => 4,
+//                    ));
+//                    Launcher::superaddModule('server', array(
+//                        'name' => 'server_test2',
+//                        'port' => 8382,
+//                        'password' => 'mypass',
+//                        'encryption' => 'aes-256-cfb',
+//                        'process_num' => 4,
+//                    ));
             }
         };
     }
 
     public static function guideMsg()
     {
-        return 'hello';
+        return 'cmd help message';
     }
 
 }

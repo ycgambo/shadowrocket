@@ -111,7 +111,7 @@ class Launcher
      * @param array $config
      * @throws \Exception
      */
-    public static function supperaddModule($module_name, array $config)
+    public static function superaddModule($module_name, array $config)
     {
         /* append config and create modules */
         self::$_config[$module_name] = $config;

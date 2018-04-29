@@ -59,7 +59,7 @@ class Server extends ConfigRequired implements LauncherModuleInterface
             $client->cipher = new Encryptor($config['password'], $config['encryption']);
         };
 
-        $worker->onMessage = function ($client, $buffer) use ($config, $protocol) {
+        $worker->onMessage = function ($client, $buffer) use ($config, $protocol, $worker) {
             switch ($client->stage) {
                 case Connection::STAGE_INIT:
                 case Connection::STAGE_ADDR:
@@ -68,8 +68,8 @@ class Server extends ConfigRequired implements LauncherModuleInterface
                     if ($request = Connection::parseSocket5Request($buffer)) {
 
                         if ($guarder = Launcher::getModuleIfReady('guarder')) {
-                            if (!$guarder->pass($request, $config['port'])) {
-                                Worker::stopAll();
+                            if ($guarder->reject($request, $config['port'])) {
+                                $worker->stop();
                             }
                         }
 

@@ -6,7 +6,7 @@ $config = array(
         'port' => '8388',
         'password' => 'mypass',
         'encryption' => 'aes-256-cfb',
-        'process_num' => 12,
+        'process_num' => 2,
     ),
     'manager' => array(
         'port' => 6001,
