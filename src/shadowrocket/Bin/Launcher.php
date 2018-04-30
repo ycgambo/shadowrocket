@@ -71,9 +71,9 @@ class Launcher
         $configs = array_merge($configs, self::builtinModules());
 
         /* save config and create modules */
-        self::$_config = $configs;
         foreach ($configs as $module_name => $config) {
             self::addModule($module_name, $config);
+            self::$_config[$config['name']] = $config;
         }
 
         /* Check required configurations on enabled modules */
@@ -115,8 +115,8 @@ class Launcher
     public static function superaddModule($module_name, array $config)
     {
         /* append config and create modules */
-        self::$_config[$module_name] = $config;
         $module = self::addModule($module_name, $config);
+        self::$_config[$config['name']] = $config;
 
         /* Check required configurations */
         if ((($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
@@ -202,11 +202,11 @@ class Launcher
     {
         $module_name = strtolower($module_name);
 
-        if (self::getModule($module_name)) {
-            throw new \Exception('module name ' . $module_name . ' already in use');
-        }
-
         self::setCommonConfig($module_name, $config);
+
+        if (self::getModule($config['name'])) {
+            throw new \Exception('module name ' . $config['name']. ' already in use');
+        }
 
         // use module_name to create a module
         try {
