@@ -24,7 +24,7 @@ class Guarder extends ConfigRequired implements LauncherModuleInterface, Guarder
      */
     static $counter = array();
 
-    public function initConfig(array $config = array())
+    public function initByConfig(array $config = array())
     {
         $this->resetConfig($config);
         $this->declareRequiredConfig(array(

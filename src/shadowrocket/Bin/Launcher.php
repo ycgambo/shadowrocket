@@ -268,7 +268,7 @@ class Launcher
         try {
             $module = new $class();
             if ($module instanceof LauncherModuleInterface) {
-                $module->initConfig($config);
+                $module->initByConfig($config);
             }
             if (!($module instanceof Configurable)) {
                 foreach ($config as $name => $value) {
