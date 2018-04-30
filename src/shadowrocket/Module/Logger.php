@@ -18,9 +18,8 @@ use ShadowRocket\Module\Base\LauncherModuleInterface;
 
 class Logger extends ConfigRequired implements LauncherModuleInterface
 {
-    public function initConfig(array $config = array())
+    public function init()
     {
-        $this->resetConfig($config);
         $this->declareRequiredConfig(array(
             'logger_name',
             'handlers',

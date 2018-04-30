@@ -14,6 +14,7 @@ namespace ShadowRocket\Bin;
 use ShadowRocket\Module\Base\Configurable;
 use ShadowRocket\Module\Base\ConfigRequired;
 use ShadowRocket\Module\Base\LauncherModuleInterface;
+use ShadowRocket\Module\Base\ManageableInterface;
 use Workerman\Worker;
 
 class Launcher
@@ -33,9 +34,9 @@ class Launcher
         /* 1st */
         array('logger'),
         /* 2nd */
-        array(),
+        array('guarder'),
         /* 3rd */
-        array('server', 'local'),
+        array('server', 'local', 'manager'),
     );
 
     /**
@@ -111,7 +112,7 @@ class Launcher
      * @param array $config
      * @throws \Exception
      */
-    public static function supperaddModule($module_name, array $config)
+    public static function superaddModule($module_name, array $config)
     {
         /* append config and create modules */
         self::$_config[$module_name] = $config;
@@ -140,6 +141,36 @@ class Launcher
     }
 
     /**
+     * @param $module_name
+     * @throws \Exception
+     */
+    public static function removeModule($module_name)
+    {
+        $module_name = strtolower($module_name);
+       if (!self::isModuleReady($module_name)) {
+           throw new \Exception($module_name . ' not ready yet');
+       }
+
+       $module = self::getModule($module_name);
+       if ($module instanceof ManageableInterface) {
+
+           $module->stop();
+
+           unset($module);
+
+           /**
+            * This will also set self::$_echeloned_modules[$module_name] to null
+            *
+            * @see Launcher::addModule()
+            */
+           self::$_modules[$module_name] = null;
+
+       } else {
+           throw new \Exception($module_name . ' is not manageable');
+       }
+    }
+
+    /**
      * these are builtin module configurations
      *
      * @return array
@@ -152,7 +183,7 @@ class Launcher
                 'enable' => true,
                 'logger_name' => 'shadowrocket_builtin_logger',
                 'handlers' => array(
-                    new \Monolog\Handler\StreamHandler(__DIR__.'/shadowrocket.log', \Monolog\Logger::DEBUG),
+                    new \Monolog\Handler\StreamHandler(__DIR__ . '/shadowrocket.log', \Monolog\Logger::DEBUG),
                 ),
             )
         );
@@ -171,6 +202,10 @@ class Launcher
     {
         $module_name = strtolower($module_name);
 
+        if (self::getModule($module_name)) {
+            throw new \Exception('module name ' . $module_name . ' already in use');
+        }
+
         self::setCommonConfig($module_name, $config);
 
         // use module_name to create a module
@@ -185,8 +220,8 @@ class Launcher
         if (!isset(self::$_echeloned_modules[$order])) {
             self::$_echeloned_modules[$order] = array();
         }
-        self::$_echeloned_modules[$order][] = $module;
-        self::$_modules[$config['name']] = $module;
+        self::$_echeloned_modules[$order][] = &$module;
+        self::$_modules[$config['name']] = &$module;
 
         return $module;
     }
@@ -232,13 +267,17 @@ class Launcher
 
         try {
             $module = new $class();
-            if ($module instanceof LauncherModuleInterface) {
-                $module->initConfig($config);
-            }
-            if (!($module instanceof Configurable)) {
+
+            if ($module instanceof Configurable) {
+                $module->resetConfig($config);
+            } else {
                 foreach ($config as $name => $value) {
                     $module->$name = $value;
                 }
+            }
+
+            if ($module instanceof LauncherModuleInterface) {
+                $module->init();
             }
         } catch (\Exception $e) {
             throw $e;
@@ -304,7 +343,7 @@ class Launcher
     protected static function getModuleReady($module, $superadd = false)
     {
         try {
-            if ($superadd && method_exists($module, 'superadd')) {
+            if ($superadd && ($module instanceof ManageableInterface)) {
                 $module->superadd();
             } else if ($module instanceof LauncherModuleInterface) {
                 $module->getReady();
@@ -322,18 +361,20 @@ class Launcher
 
     public static function isModuleReady($module_name)
     {
-        $module = self::$_modules[strtolower($module_name)];
-        if ($module instanceof Configurable) {
-            return $module->getConfig('__is_ready');
-        } else if (property_exists($module, '__is_ready')) {
-            return $module->__is_ready;
+        if ($module = self::getModule($module_name)) {
+            if ($module instanceof Configurable) {
+                return $module->getConfig('__is_ready');
+            } else if (property_exists($module, '__is_ready')) {
+                return $module->__is_ready;
+            }
         }
         return false;
     }
 
     public static function getModule($module_name)
     {
-        return self::$_modules[strtolower($module_name)];
+        $module_name = strtolower($module_name);
+        return isset(self::$_modules[$module_name]) ? self::$_modules[$module_name] : null;
     }
 
     public static function getModuleIfReady($module_name)

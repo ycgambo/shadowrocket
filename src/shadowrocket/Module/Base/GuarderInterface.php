@@ -2,16 +2,17 @@
 /**
  * This file is part of shadowrocket.
  *
- * @file       LauncherModuleInterface.php
+ * @file       GuarderInterface.php
  * @author     ycgambo
- * @update     4/26/18 10:09 AM
+ * @update     4/30/18 8:20 AM
  * @copyright  shadowrocket <https://github.com/ycgambo/shadowrocket>
  * @license    MIT License <http://www.opensource.org/licenses/mit-license.html>
  */
 
 namespace ShadowRocket\Module\Base;
 
-interface LauncherModuleInterface {
-    public function init();
-    public function getReady();
+interface GuarderInterface
+{
+    public function deny($request, $port);
+    public function block($request, $port);
 }

@@ -3,16 +3,16 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $config = array(
     'server' => array(
-        'port' => '8388',
+        'port' => '8380',
         'password' => 'mypass',
         'encryption' => 'aes-256-cfb',
-        'process_num' => 12,
+        'process_num' => 2,
     ),
-    'logger' => array(
-        'handlers' => array(
-            new \Monolog\Handler\StreamHandler(__DIR__.'/sr.log', \Monolog\Logger::DEBUG),
-        ),
+    'manager' => array(
+        'port' => 6001,
+        'token' => 123456,
     ),
+    'guarder' => array(),
 );
 
 ShadowRocket\Bin\Launcher::launch($config);
