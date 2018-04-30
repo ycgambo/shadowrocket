@@ -23,9 +23,8 @@ use Workerman\Connection\AsyncTcpConnection;
 
 class Server extends ConfigRequired implements LauncherModuleInterface, ManageableInterface
 {
-    public function initByConfig(array $config = array())
+    public function init()
     {
-        $this->resetConfig($config);
         $this->declareRequiredConfig(array(
             'port',
             'password',

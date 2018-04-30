@@ -20,9 +20,8 @@ use Workerman\Connection\AsyncTcpConnection;
 
 class Manager extends ConfigRequired implements LauncherModuleInterface
 {
-    public function initByConfig(array $config = array())
+    public function init()
     {
-        $this->resetConfig($config);
         $this->declareRequiredConfig(array(
             'port',
             'token',
