@@ -45,11 +45,11 @@ class Manager extends ConfigRequired implements LauncherModuleInterface
             switch ($client->stage) {
                 case Connection::STAGE_INIT:
                     if ($buffer == $config['token']) {
-                        $client->stage = Connection::VARIFIED;
+                        $client->stage = Connection::VERIFIED;
                         $client->send(Manager::guideMsg());
                     }
                     break;
-                case Connection::VARIFIED:
+                case Connection::VERIFIED:
                     // todo: cmd parser
                     // this is how to superadd module
 //                    Launcher::superaddModule('server', array(

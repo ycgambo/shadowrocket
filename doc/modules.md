@@ -35,3 +35,15 @@ Logger uses Monolog Registry
 
 - logger_name: the name of logger, default: shadowrocket_logger
 - handlers: array of handler that are instance of Monolog\Handler\HandlerInterface
+
+### Guarder
+
+Guarder will determine whether to allow a request pass the port it guarded or recklessly close the port.
+
+#### Required configurations
+
+- instance: A class instance implemented ShadowRocket\Module\Base\ManageableInterface. 
+default: ShadowRocket\Module\Base\Guarder
+
+currently, the default guarder will pass all the requests.
+

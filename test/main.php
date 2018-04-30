@@ -3,7 +3,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $config = array(
     'server' => array(
-        'port' => '8388',
+        'port' => '8380',
         'password' => 'mypass',
         'encryption' => 'aes-256-cfb',
         'process_num' => 2,

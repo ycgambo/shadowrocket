@@ -35,3 +35,14 @@ Logger使用Monolog的Registry
 
 - logger_name: logger名, 默认值: shadowrocket_logger
 - handlers: Monolog\Handler\HandlerInterface实例的数组
+
+### Guarder
+
+Guarder将决定是否对端口上的请求放行，或者鲁莽的关闭该端口
+
+#### 需要的配置
+
+- instance: 实现了ShadowRocket\Module\Base\ManageableInterface接口的类. 
+默认值: ShadowRocket\Module\Base\Guarder
+
+现在，默认的Guarder将会放行所有请求。
