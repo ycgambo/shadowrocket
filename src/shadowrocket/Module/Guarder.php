@@ -13,9 +13,10 @@ namespace ShadowRocket\Module;
 
 
 use ShadowRocket\Module\Base\ConfigRequired;
+use ShadowRocket\Module\Base\GuarderInterface;
 use ShadowRocket\Module\Base\LauncherModuleInterface;
 
-class Guarder extends ConfigRequired implements LauncherModuleInterface
+class Guarder extends ConfigRequired implements LauncherModuleInterface, GuarderInterface
 {
     // todo: replace counter with database search
     /**
@@ -33,29 +34,44 @@ class Guarder extends ConfigRequired implements LauncherModuleInterface
 
     public function getReady()
     {
+        $instance = $this->getConfig('instance');
 
+        if (!$instance instanceof GuarderInterface) {
+            throw new \Exception('A Guarder should implements ShadowRocket\Module\Base\GuarderInterface');
+        }
     }
 
     /**
-     * Custom Guarder support. just pass instance in and implement block method.
+     * This stops a service
      * @param $request
      * @param $port
-     * @return mixed
+     * @return boolean
      */
-    public function reject($request, $port)
+    public function _deny($request, $port)
+    {
+        return $this->getConfig('instance')->deny($request, $port);
+    }
+
+    /**
+     * This blocks a request
+     * @param $request
+     * @param $port
+     * @return boolean
+     */
+    public function _block($request, $port)
     {
         return $this->getConfig('instance')->block($request, $port);
     }
 
-    public function block($request, $port)
+    public function deny($request, $port)
     {
+        return false;
+
         if (isset(self::$counter[$port])) {
             self::$counter[$port] = self::$counter[$port] + 1;
         } else {
             self::$counter[$port] = 0;
         }
-
-        return false;
 
         if (self::$counter[$port] < 5) {
             return true;
@@ -64,5 +80,10 @@ class Guarder extends ConfigRequired implements LauncherModuleInterface
             self::$counter[$port] = 0;
             return false;
         }
+    }
+
+    public function block($request, $prot)
+    {
+        return false;
     }
 }

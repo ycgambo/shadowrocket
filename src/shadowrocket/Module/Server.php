@@ -14,13 +14,14 @@ namespace ShadowRocket\Module;
 use ShadowRocket\Bin\Launcher;
 use ShadowRocket\Module\Base\ConfigRequired;
 use ShadowRocket\Module\Base\LauncherModuleInterface;
+use ShadowRocket\Module\Base\ManageableInterface;
 use ShadowRocket\Net\Connection;
 use ShadowRocket\Net\Encryptor;
 use Workerman\Connection\UdpConnection;
 use Workerman\Worker;
 use Workerman\Connection\AsyncTcpConnection;
 
-class Server extends ConfigRequired implements LauncherModuleInterface
+class Server extends ConfigRequired implements LauncherModuleInterface, ManageableInterface
 {
     public function initConfig(array $config = array())
     {
@@ -43,6 +44,11 @@ class Server extends ConfigRequired implements LauncherModuleInterface
     {
         $this->createWorker('tcp')->listen();
         $this->createWorker('udp')->listen();
+    }
+
+    public function stop()
+    {
+        // TODO: Implement remove() method.
     }
 
     protected function createWorker($protocol)
@@ -68,8 +74,12 @@ class Server extends ConfigRequired implements LauncherModuleInterface
                     if ($request = Connection::parseSocket5Request($buffer)) {
 
                         if ($guarder = Launcher::getModuleIfReady('guarder')) {
-                            if ($guarder->reject($request, $config['port'])) {
+                            if ($guarder->_deny($request, $config['port'])) {
                                 $worker->stop();
+                            }
+
+                            if ($guarder->_block($request, $config['port'])) {
+                                return;
                             }
                         }
 
