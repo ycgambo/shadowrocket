@@ -37,8 +37,8 @@ class Server extends ConfigRequired implements LauncherModuleInterface, Manageab
 
     public function getReady()
     {
-        $this->workers[] = &$this->createWorker('tcp');
-        $this->workers[] = &$this->createWorker('udp');
+        $this->workers[] = $this->createWorker('tcp');
+        $this->workers[] = $this->createWorker('udp');
     }
 
     /**
@@ -46,13 +46,13 @@ class Server extends ConfigRequired implements LauncherModuleInterface, Manageab
      */
     public function superadd()
     {
-        $worker = &$this->createWorker('tcp', true);
+        $worker = $this->createWorker('tcp', true);
         $worker->listen();
-        $this->workers[] = &$worker;
+        $this->workers[] = $worker;
 
-        $worker = &$this->createWorker('udp', true);
+        $worker = $this->createWorker('udp', true);
         $worker->listen();
-        $this->workers[] = &$worker;
+        $this->workers[] = $worker;
     }
 
     public function stop()
