@@ -23,41 +23,60 @@ use Workerman\Connection\AsyncTcpConnection;
 
 class Server extends ConfigRequired implements LauncherModuleInterface, ManageableInterface
 {
+    private $workers = array();
+
     public function init()
     {
         $this->declareRequiredConfig(array(
             'port',
             'password',
-            'encryption',
-            'process_num',
+            'encryption' => 'aes-256-cfb',
+            'process_num' => 4,
         ));
     }
 
     public function getReady()
     {
-        $this->createWorker('tcp');
-        $this->createWorker('udp');
+        $this->workers[] = &$this->createWorker('tcp');
+        $this->workers[] = &$this->createWorker('udp');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function superadd()
     {
-        $this->createWorker('tcp')->listen();
-        $this->createWorker('udp')->listen();
+        $worker = &$this->createWorker('tcp', true);
+        $worker->listen();
+        $this->workers[] = &$worker;
+
+        $worker = &$this->createWorker('udp', true);
+        $worker->listen();
+        $this->workers[] = &$worker;
     }
 
     public function stop()
     {
-        // TODO: Implement remove() method.
+        foreach ($this->workers as $worker) {
+            $worker->stop();
+        }
     }
 
-    protected function createWorker($protocol)
+    protected function createWorker($protocol, $superadd = false)
     {
-        $config = $this->getConfig();
+        $config = &$this->getConfig();
 
         $worker = new Worker($protocol . '://0.0.0.0:' . $config['port']);
-        $worker->count = $config['process_num'];
+
+        if ($superadd) {
+            if (PHP_MAJOR_VERSION < 7) {
+                $config['process_num'] = 1;
+            } else {
+                $worker->reusePort = true;
+            }
+        }
         $worker->name = 'shadowsocks-server';
-        $worker->reusePort = true;
+        $worker->count = $config['process_num'];
 
         $worker->onConnect = function ($client) use ($config) {
             $client->stage = Connection::STAGE_INIT;
@@ -78,6 +97,7 @@ class Server extends ConfigRequired implements LauncherModuleInterface, Manageab
                             }
 
                             if ($guarder->_block($request, $config['port'])) {
+                                $client->close();
                                 return;
                             }
                         }
