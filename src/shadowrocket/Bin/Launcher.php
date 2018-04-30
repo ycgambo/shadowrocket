@@ -70,10 +70,8 @@ class Launcher
 
         $configs = array_merge($configs, self::builtinModules());
 
-        /* save config and create modules */
         foreach ($configs as $module_name => $config) {
             self::addModule($module_name, $config);
-            self::$_config[$config['name']] = $config;
         }
 
         /* Check required configurations on enabled modules */
@@ -114,9 +112,7 @@ class Launcher
      */
     public static function superaddModule($module_name, array $config)
     {
-        /* append config and create modules */
         $module = self::addModule($module_name, $config);
-        self::$_config[$config['name']] = $config;
 
         /* Check required configurations */
         if ((($module instanceof Configurable) && ($module->getConfig('enable') == false)) ||
@@ -198,7 +194,7 @@ class Launcher
      * @throws \Exception
      * @return LauncherModuleInterface
      */
-    protected static function addModule($module_name, array $config = array())
+    protected static function addModule($module_name, array &$config = array())
     {
         $module_name = strtolower($module_name);
 
@@ -214,6 +210,9 @@ class Launcher
         } catch (\Exception $e) {
             throw $e;
         }
+
+        // save config
+        self::$_config[$config['name']] = $config;
 
         // use config['name'] to trace this module
         $order = self::getLaunchOrder($config['name']);

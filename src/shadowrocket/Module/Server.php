@@ -64,7 +64,7 @@ class Server extends ConfigRequired implements LauncherModuleInterface, Manageab
 
     protected function createWorker($protocol, $superadd = false)
     {
-        $config = &$this->getConfig();
+        $config = $this->getConfig();
 
         $worker = new Worker($protocol . '://0.0.0.0:' . $config['port']);
 
