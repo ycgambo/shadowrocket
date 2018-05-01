@@ -34,7 +34,8 @@ interface GuarderInterface
     /**
      * If false returned, connection between client and remote will be closed.
      * @param $data string  the data come in and go out this server
+     * @param $port
      * @return mixed
      */
-    public function inspectFailed($data);
+    public function inspectFailed($data, $port);
 }

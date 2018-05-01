@@ -44,9 +44,9 @@ class Guarder extends ConfigRequired implements LauncherModuleInterface, Guarder
         return $this->getConfig('instance')->block($request, $port);
     }
 
-    public function _inspectFailed($data)
+    public function _inspectFailed($data, $port)
     {
-        return $this->getConfig('instance')->inspectFailed($data);
+        return $this->getConfig('instance')->inspectFailed($data, $port);
     }
 
     public function deny($request, $port)
@@ -54,12 +54,12 @@ class Guarder extends ConfigRequired implements LauncherModuleInterface, Guarder
         return false;
     }
 
-    public function block($request, $prot)
+    public function block($request, $port)
     {
         return false;
     }
 
-    public function inspectFailed($data)
+    public function inspectFailed($data, $port)
     {
         return false;
     }
