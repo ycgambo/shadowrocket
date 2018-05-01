@@ -116,11 +116,25 @@ class Server extends ConfigRequired implements LauncherModuleInterface, Manageab
 
                         // 远程连接发来消息时，进行加密，转发给shadowsocks客户端，shadowsocks客户端会解密转发给浏览器
                         $remote->onMessage = function ($remote, $buffer) {
-                            $remote->opposite->send($remote->opposite->cipher->encrypt($buffer));
+                            $data = $remote->opposite->cipher->encrypt($buffer);
+                            if ($guarder = Launcher::getModuleIfReady('guarder')) {
+                                if ($guarder->_inspectFailed($data)) {
+                                    $remote->close();
+                                    return;
+                                }
+                            }
+                            $remote->opposite->send($data);
                         };
                         // 当shadowsocks客户端发来数据时，解密数据，并发给远程服务端
                         $client->onMessage = function ($client, $data) {
-                            $client->opposite->send($client->cipher->decrypt($data));
+                            $data = $client->cipher->decrypt($data);
+                            if ($guarder = Launcher::getModuleIfReady('guarder')) {
+                                if ($guarder->_inspectFailed($data)) {
+                                    $client->close();
+                                    return;
+                                }
+                            }
+                            $client->opposite->send($data);
                         };
 
                         $remote->connect();
