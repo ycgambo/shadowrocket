@@ -57,6 +57,7 @@ class Manager extends ConfigRequired implements LauncherModuleInterface
                     try {
                         if ($command = $parser->parseCommand($buffer)) {
                             Manager::handle($command, $parser);
+                            $client->send(PHP_EOL . 'success' . PHP_EOL);
                         } else {
                             $client->send($parser->getHelpText());
                         }
