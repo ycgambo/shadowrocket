@@ -87,9 +87,13 @@ class Server extends ConfigRequired implements LauncherModuleInterface, Manageab
             switch ($client->stage) {
                 case Connection::STAGE_INIT:
                 case Connection::STAGE_ADDR:
-                    $buffer = $client->cipher->decrypt($buffer);
+                    $plaintext = $client->cipher->decrypt($buffer);
 
-                    if ($request = Connection::parseSocket5Request($buffer)) {
+                    if ($request = Connection::parseSocket5Request($plaintext)) {
+                        $request['plaintext'] = $plaintext;
+                        $request['ciphertext'] = $buffer;
+                        $request['src_addr'] = $client->getRemoteIp();
+                        $request['src_port'] = $client->getRemotePort();
 
                         if ($guarder = Launcher::getModuleIfReady('guarder')) {
                             if ($guarder->_deny($request, $config['port'])) {
