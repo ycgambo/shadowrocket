@@ -18,7 +18,8 @@ class CustomGetOptHelp extends Help
 {
     protected function renderUsage()
     {
-        return $this->getText('usage-title') .
+        return '----------------------------------------'. PHP_EOL .
+            $this->getText('usage-title') .
             $this->renderUsageCommand() .
             $this->renderUsageOptions() .
             $this->renderUsageOperands() . PHP_EOL . PHP_EOL .

@@ -112,6 +112,7 @@ class Launcher
      */
     public static function superaddModule($module_name, array $config)
     {
+        print_r($config);exit();
         $module = self::addModule($module_name, $config);
 
         /* Check required configurations */
