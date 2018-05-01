@@ -30,7 +30,7 @@ class ManagerCommandParser
         $getopt->addCommands(array(
             Command::create('server:add', '')
                 ->setShortDescription('Add server on one or more port.')
-                ->setDescription('Create server named as prefix_port on each port. ' )
+                ->setDescription('Create server named as prefix_port on each port. ')
                 ->addOperands(array(
                     Operand::create('password', Operand::REQUIRED),
                     Operand::create('ports', Operand::MULTIPLE + Operand::REQUIRED),
@@ -59,8 +59,13 @@ class ManagerCommandParser
         }
     }
 
+//    public function getOperand($index)
+//    {
+//        return $this->_getopt->getOperand($index);
+//    }
+
     public function __call($name, $arguments)
     {
-        return $this->_getopt->$name($arguments);
+        return call_user_func_array(array(&$this->_getopt,$name),$arguments);
     }
 }
