@@ -5,8 +5,9 @@
 
 ### Server Manager
 
-See Module/Manager/Helper and Module/Manager for more details.
+Support more module management.
 
 ## Recent done
 
 Guarder
+Manager

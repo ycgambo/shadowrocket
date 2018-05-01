@@ -11,9 +11,9 @@ A socks5 proxy to build your own shadowsocks private network. PHP based & Compos
 3. Graceful restart
 4. Monolog Logger
 5. Guarder(Black List)
+6. Server Manager
 
 ### Coming Next
-- server manager
 - user management
 
 
