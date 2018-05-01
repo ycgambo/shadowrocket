@@ -14,7 +14,8 @@
         "php": ">=5.3.0",
         "walkor/workerman": "^3.5.4",
         "phpseclib/phpseclib": "^2.0",
-        "monolog/monolog": "^1.23"
+        "monolog/monolog": "^1.23",
+        "ulrichsg/getopt-php": "^3.1.1"
     },
     "autoload": {
         "psr-4": {

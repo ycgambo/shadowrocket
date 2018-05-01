@@ -5,6 +5,9 @@
 
 ### Server Manager
 
-we need a cmd string parser to extract management cmd.
+Support more module management.
 
 ## Recent done
+
+Guarder
+Manager

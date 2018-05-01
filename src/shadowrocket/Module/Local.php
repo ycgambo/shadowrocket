@@ -29,9 +29,9 @@ class Local extends ConfigRequired implements LauncherModuleInterface
             'server',
             'port',
             'password',
-            'encryption',
+            'encryption' => 'aes-256-cfb',
             'local_port',
-            'process_num',
+            'process_num' => 4,
         ));
     }
 

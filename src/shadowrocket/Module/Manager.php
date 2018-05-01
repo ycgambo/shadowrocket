@@ -14,9 +14,11 @@ namespace ShadowRocket\Module;
 use ShadowRocket\Bin\Launcher;
 use ShadowRocket\Module\Base\ConfigRequired;
 use ShadowRocket\Module\Base\LauncherModuleInterface;
+use ShadowRocket\Module\Helper\CustomGetOptHelp;
+use ShadowRocket\Module\Helper\ManagerCommandParser;
 use ShadowRocket\Net\Connection;
 use Workerman\Worker;
-use Workerman\Connection\AsyncTcpConnection;
+use GetOpt\ArgumentException;
 
 class Manager extends ConfigRequired implements LauncherModuleInterface
 {
@@ -42,37 +44,48 @@ class Manager extends ConfigRequired implements LauncherModuleInterface
         };
 
         $worker->onMessage = function ($client, $buffer) use ($config) {
+            $parser = new ManagerCommandParser();
+
             switch ($client->stage) {
                 case Connection::STAGE_INIT:
                     if ($buffer == $config['token']) {
                         $client->stage = Connection::VERIFIED;
-                        $client->send(Manager::guideMsg());
+                        $client->send($parser->getHelpText());
                     }
                     break;
                 case Connection::VERIFIED:
-                    // todo: cmd parser
-                    // this is how to superadd module
-//                    Launcher::superaddModule('server', array(
-//                        'name' => 'server_test',
-//                        'port' => 8381,
-//                        'password' => 'mypass',
-//                        'encryption' => 'aes-256-cfb',
-//                        'process_num' => 4,
-//                    ));
-//                    Launcher::superaddModule('server', array(
-//                        'name' => 'server_test2',
-//                        'port' => 8382,
-//                        'password' => 'mypass',
-//                        'encryption' => 'aes-256-cfb',
-//                        'process_num' => 4,
-//                    ));
+                    try {
+                        if ($command = $parser->parseCommand($buffer)) {
+                            Manager::handle($command, $parser);
+                            $client->send(PHP_EOL . 'success' . PHP_EOL);
+                        } else {
+                            $client->send($parser->getHelpText());
+                        }
+                    } catch (ArgumentException $exception) {
+                        $client->send(PHP_EOL . $exception->getMessage() . PHP_EOL . $parser->getHelpText());
+                    }
             }
         };
     }
 
-    public static function guideMsg()
+    /**
+     * @param $command
+     * @param $parser
+     * @throws \Exception
+     */
+    protected static function handle($command, $parser)
     {
-        return 'cmd help message';
+        switch ($command) {
+            case 'server:add':
+                foreach ($parser->getOperand('ports') as $port) {
+                    Launcher::superaddModule('server', array(
+                        'name' => $parser->getOption('name') . '_' . $port,
+                        'port' => $port,
+                        'password' => $parser->getOperand('password'),
+                        'process_num' => $parser->getOption('process'),
+                    ));
+                }
+                break;
+        }
     }
-
 }
