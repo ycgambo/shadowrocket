@@ -7,7 +7,12 @@
 
 Support more module management.
 
-## Recent done
+### Bandwidth Throttling
 
-Guarder
-Manager
+How to calculate the bandwidth on Socket
+
+How to limit it
+
+## Recently done
+
+### Guarder
