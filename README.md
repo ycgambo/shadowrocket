@@ -14,6 +14,7 @@ A socks5 proxy to build your own shadowsocks private network. PHP based & Compos
 6. Server Manager
 
 ### Coming Next
+- bandwidth throttling
 - user management
 
 
