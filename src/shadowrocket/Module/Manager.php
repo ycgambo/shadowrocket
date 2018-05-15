@@ -31,7 +31,6 @@ class Manager extends ConfigRequired implements LauncherModuleInterface, Manager
         $this->declareRequiredConfig(array(
             'port',
             'token',
-            'process_num' => 1,
             'instance' => new self(),
         ));
     }
@@ -54,7 +53,7 @@ class Manager extends ConfigRequired implements LauncherModuleInterface, Manager
         $config = $this->getConfig();
 
         $worker = new Worker('tcp://0.0.0.0:' . $config['port']);
-        $worker->count = $config['process_num'];
+        $worker->count = 1;
         $worker->name = 'shadowsocks-manager';
 
         $worker->onConnect = function ($client) use ($config) {
