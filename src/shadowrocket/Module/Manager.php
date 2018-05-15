@@ -98,14 +98,12 @@ class Manager extends ConfigRequired implements LauncherModuleInterface, Manager
     {
         switch ($command) {
             case 'server:add':
-                foreach ($parser->getOperand('ports') as $port) {
                     Manager::serverAdd(array(
                         'name' => $parser->getOption('name') . '_' . $port,
-                        'port' => $port,
+                        'port' => $parser->getOperand('port'),
                         'password' => $parser->getOperand('password'),
                         'process_num' => $parser->getOption('process'),
                     ));
-                }
                 break;
             case 'server:del':
                 foreach ($parser->getOperand('names') as $name) {
