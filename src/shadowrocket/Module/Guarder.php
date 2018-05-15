@@ -12,6 +12,7 @@
 namespace ShadowRocket\Module;
 
 
+use ShadowRocket\Exception\ConfigException;
 use ShadowRocket\Module\Base\ConfigRequired;
 use ShadowRocket\Module\Base\GuarderInterface;
 use ShadowRocket\Module\Base\LauncherModuleInterface;
@@ -30,7 +31,7 @@ class Guarder extends ConfigRequired implements LauncherModuleInterface, Guarder
         $instance = $this->getConfig('instance');
 
         if (!$instance instanceof GuarderInterface) {
-            throw new \Exception('A Guarder should implements ShadowRocket\Module\Base\GuarderInterface');
+            throw new ConfigException('A Guarder should implements ShadowRocket\Module\Base\GuarderInterface');
         }
     }
 

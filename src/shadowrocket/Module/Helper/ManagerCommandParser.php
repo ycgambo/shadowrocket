@@ -29,11 +29,11 @@ class ManagerCommandParser
         $getopt->setHelp(new CustomGetOptHelp());
         $getopt->addCommands(array(
             Command::create('server:add', '')
-                ->setShortDescription('Add server on one or more port.')
-                ->setDescription('Create server named as prefix_port on each port. ')
+                ->setShortDescription('Add server on a port.')
+                ->setDescription('Create server named as prefix_port. ')
                 ->addOperands(array(
                     Operand::create('password', Operand::REQUIRED),
-                    Operand::create('ports', Operand::MULTIPLE + Operand::REQUIRED),
+                    Operand::create('port', Operand::REQUIRED),
                 ))
                 ->addOptions(array(
                     Option::create('n', 'name', GetOpt::OPTIONAL_ARGUMENT)
@@ -43,7 +43,15 @@ class ManagerCommandParser
                         ->setDescription('process number.')
                         ->setDefaultValue(4),
                 )),
-            Command::create('server:del', ''),
+            Command::create('server:del', '')
+                ->setShortDescription('Delete added server according to their name.')
+                ->addOperands(array(
+                    Operand::create('names', Operand::MULTIPLE + Operand::REQUIRED),
+                )),
+            Command::create('server:list', '')
+                ->setShortDescription('Simple server list.'),
+            Command::create('server:detail', '')
+                ->setShortDescription('List server detail.'),
         ));
 
         $this->_getopt = $getopt;

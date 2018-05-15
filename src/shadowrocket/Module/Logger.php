@@ -13,6 +13,7 @@ namespace ShadowRocket\Module;
 
 use Monolog\Handler\HandlerInterface;
 use Monolog\Registry;
+use ShadowRocket\Exception\ConfigException;
 use ShadowRocket\Module\Base\ConfigRequired;
 use ShadowRocket\Module\Base\LauncherModuleInterface;
 
@@ -33,7 +34,7 @@ class Logger extends ConfigRequired implements LauncherModuleInterface
         $handlers = $this->getConfig('handlers');
         foreach ($handlers as $handler) {
             if (!($handler instanceof HandlerInterface)) {
-                throw new \Exception(
+                throw new ConfigException(
                     'Logger handlers should be an instance array of Monolog\Handler\HandlerInterface.'
                 );
             }
