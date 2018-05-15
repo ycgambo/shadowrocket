@@ -49,7 +49,9 @@ class ManagerCommandParser
                     Operand::create('names', Operand::MULTIPLE + Operand::REQUIRED),
                 )),
             Command::create('server:list', '')
-                ->setShortDescription('List added server.'),
+                ->setShortDescription('Simple server list.'),
+            Command::create('server:detail', '')
+                ->setShortDescription('List server detail.'),
         ));
 
         $this->_getopt = $getopt;

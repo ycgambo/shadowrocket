@@ -24,6 +24,8 @@ use GetOpt\ArgumentException;
 
 class Manager extends ConfigRequired implements LauncherModuleInterface, ManagerInterface
 {
+    protected static $servers = array();
+
     public function init()
     {
         $this->declareRequiredConfig(array(
@@ -89,11 +91,6 @@ class Manager extends ConfigRequired implements LauncherModuleInterface, Manager
         };
     }
 
-    /**
-     * @param $command
-     * @param $parser
-     * @throws \Exception
-     */
     protected function handle($command, $parser)
     {
         switch ($command) {
@@ -105,14 +102,19 @@ class Manager extends ConfigRequired implements LauncherModuleInterface, Manager
                     'password' => $parser->getOperand('password'),
                     'process_num' => $parser->getOption('process'),
                 ));
+                return 'Done' . PHP_EOL;
                 break;
             case 'server:del':
                 foreach ($parser->getOperand('names') as $name) {
                     Manager::serverDel($name);
                 }
+                return 'Done' . PHP_EOL;
                 break;
             case 'server:list':
                 return Manager::serverList();
+                break;
+            case 'server:detail':
+                return Manager::serverList(true);
                 break;
         }
     }
@@ -120,16 +122,31 @@ class Manager extends ConfigRequired implements LauncherModuleInterface, Manager
     public static function serverAdd(array $config)
     {
         Launcher::superaddModule('server', $config);
+        self::$servers[$config['name']] = $config;
     }
 
     public static function serverDel($server_name)
     {
-        Launcher::removeModule($server_name);
+        try {
+            Launcher::removeModule($server_name);
+            unset(self::$servers[$server_name]);
+        } catch (\Exception $e) {
+        }
     }
 
-    public static function serverList()
+    public static function serverList($detail = false)
     {
-        return var_export(Launcher::getModule(), true);
+        $rtn = 'Total: ' . count(self::$servers) . PHP_EOL;
+
+        foreach (self::$servers as $name => $config) {
+            if ($detail) {
+                $rtn .= "{$config['port']}: $name with password {$config['password']}, {$config['process_num']} process" . PHP_EOL;
+            } else {
+                $rtn .= "{$config['port']}: $name" . PHP_EOL;
+            }
+        }
+
+        return $rtn;
     }
 
     protected function preBoot()
