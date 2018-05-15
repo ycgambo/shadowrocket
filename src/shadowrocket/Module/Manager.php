@@ -112,6 +112,9 @@ class Manager extends ConfigRequired implements LauncherModuleInterface, Manager
                     Manager::serverDel($name);
                 }
                 break;
+            case 'server:list':
+                return Manager::serverList();
+                break;
         }
     }
 
