@@ -63,6 +63,7 @@ class Manager extends ConfigRequired implements LauncherModuleInterface, Manager
         $manager = $this;
 
         $worker->onMessage = function ($client, $buffer) use ($config, $manager) {
+            $buffer = rtrim($buffer);
             switch ($client->stage) {
                 case Connection::STAGE_INIT:
                     if ($buffer == $config['token']) {
