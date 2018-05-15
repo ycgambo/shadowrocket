@@ -160,7 +160,7 @@ class Manager extends ConfigRequired implements LauncherModuleInterface, Manager
                         $this->handle($command, $parser);
                     }
                 } catch (\Exception $exception) {
-                    throw new ConfigException('Mannager preBoot Failed: ' . $exception->getMessage());
+                    throw new ConfigException('Manager preBoot Failed: ' . $exception->getMessage());
                 }
             }
         }

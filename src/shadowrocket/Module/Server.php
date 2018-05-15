@@ -97,7 +97,11 @@ class Server extends ConfigRequired implements LauncherModuleInterface, Manageab
 
                         if ($guarder = Launcher::getModuleIfReady('guarder')) {
                             if ($guarder->_deny($request, $config['port'])) {
-                                $worker->stop();
+                                if ($manager = Launcher::getModuleIfReady('manager')) {
+                                    $manager::serverDel($config['name']);
+                                } else {
+                                    $worker->stop();
+                                }
                             }
 
                             if ($guarder->_block($request, $config['port'])) {
@@ -109,7 +113,7 @@ class Server extends ConfigRequired implements LauncherModuleInterface, Manageab
                         // build tunnel to actual server
                         $address = "{$protocol}://{$request['dst_addr']}:{$request['dst_port']}";
                         $remote = ($protocol == 'udp')
-                            ? new UdpConnection(socket_create( AF_INET, SOCK_DGRAM, SOL_UDP ), $address)
+                            ? new UdpConnection(socket_create(AF_INET, SOCK_DGRAM, SOL_UDP), $address)
                             : new AsyncTcpConnection($address);
 
                         Connection::bind($client, $remote);
