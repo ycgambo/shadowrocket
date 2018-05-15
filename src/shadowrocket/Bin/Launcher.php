@@ -36,7 +36,9 @@ class Launcher
         /* 2nd */
         array('guarder'),
         /* 3rd */
-        array('server', 'local', 'manager'),
+        array('server', 'local'),
+        /* 4th */
+        array('manager'),
     );
 
     /**
@@ -370,8 +372,11 @@ class Launcher
         return false;
     }
 
-    public static function getModule($module_name)
+    public static function getModule($module_name = '')
     {
+        if (empty($module_name)) {
+            return self::$_modules;
+        }
         $module_name = strtolower($module_name);
         return isset(self::$_modules[$module_name]) ? self::$_modules[$module_name] : null;
     }

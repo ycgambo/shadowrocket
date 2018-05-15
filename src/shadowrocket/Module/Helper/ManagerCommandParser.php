@@ -43,7 +43,13 @@ class ManagerCommandParser
                         ->setDescription('process number.')
                         ->setDefaultValue(4),
                 )),
-            Command::create('server:del', ''),
+            Command::create('server:del', '')
+                ->setShortDescription('Delete added server according to their name.')
+                ->addOperands(array(
+                    Operand::create('names', Operand::MULTIPLE + Operand::REQUIRED),
+                )),
+            Command::create('server:list', '')
+                ->setShortDescription('List added server.'),
         ));
 
         $this->_getopt = $getopt;
