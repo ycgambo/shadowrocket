@@ -32,12 +32,10 @@ class Launcher
      */
     private static $_launch_echelon = array(
         /* 1st */
-        array('logger'),
-        /* 2nd */
         array('guarder'),
-        /* 3rd */
+        /* 2nd */
         array('server', 'local'),
-        /* 4th */
+        /* 3rd */
         array('manager'),
     );
 
@@ -177,13 +175,6 @@ class Launcher
     private static function builtinModules()
     {
         return array(
-            'logger__' => array(
-                'enable' => true,
-                'logger_name' => 'shadowrocket_builtin_logger',
-                'handlers' => array(
-                    new \Monolog\Handler\StreamHandler(__DIR__ . '/shadowrocket.log', \Monolog\Logger::DEBUG),
-                ),
-            )
         );
     }
 

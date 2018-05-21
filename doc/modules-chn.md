@@ -27,15 +27,6 @@ Server接受客户端的请求然后返回响应。
 - local_port: 本地代理监听的端口
 - process_num: 想要启用的进程数，默认:4
 
-### Logger
-
-Logger使用Monolog的Registry
-
-#### 需要的配置
-
-- logger_name: logger名, 默认值: shadowrocket_logger
-- handlers: Monolog\Handler\HandlerInterface实例的数组
-
 ### Guarder
 
 Guarder将决定是否对端口上的请求放行，或者鲁莽的关闭该端口

@@ -120,16 +120,6 @@ class Connection
                 $port_data = unpack('n', substr($buffer, 17, 2));
                 $dst_port = $port_data[1];
                 $header_len = 19;
-
-                /* not sure, log this */
-                if ($logger = Launcher::getModuleIfReady('logger__')) {
-                    $logger->debug('incoming ipv6', array(
-                            'dst_addr' => $dst_addr,
-                            'port_data' => $port_data,
-                            'dst_port' => $dst_port,
-                        )
-                    );
-                }
                 break;
             default:
                 return array();

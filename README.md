@@ -9,9 +9,8 @@ A socks5 proxy to build your own shadowsocks private network. PHP based & Compos
 1. TCP/UDP support
 2. IPV4/DOMAINNAME/IPV6 support
 3. Graceful restart
-4. Monolog Logger
-5. Guarder(Black List)
-6. Server Manager
+4. Guarder(Black List)
+5. Server Manager
 
 ### Coming Next
 - bandwidth throttling
